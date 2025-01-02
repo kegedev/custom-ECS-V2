@@ -1,6 +1,6 @@
 ﻿using Unity.Collections;
 
-namespace Game.ECS
+namespace Game.ECS.Base.Component
 {
     internal struct ComponentContainer<T> where T : struct
     {

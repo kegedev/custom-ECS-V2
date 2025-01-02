@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Unity.Collections;
+using Game.ECS.Base.Component;
 
-namespace Game.ECS
+namespace Game.ECS.Base
 {
     internal class ECSWorld
     {

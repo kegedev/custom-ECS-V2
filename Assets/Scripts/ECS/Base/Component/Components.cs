@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 
 
-namespace Game.ECS
+namespace Game.ECS.Base.Component
 {
     internal struct PositionComponent
     {

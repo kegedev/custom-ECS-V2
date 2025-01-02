@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.ECS.Base.Systems
 {
-    internal class SystemManager : MonoBehaviour
+    internal class SystemManager
     {
         private ECSWorld GameWorld;
 

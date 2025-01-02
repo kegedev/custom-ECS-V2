@@ -2,7 +2,7 @@ using UnityEngine;
 using Game.ECS.Base;
 using Game.ECS.Base.Systems;
 
-public class GameController : MonoBehaviour
+public class GameController: MonoBehaviour
 {
     private ECSWorld _gameWorld;
     private SystemManager _systemManager;

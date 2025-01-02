@@ -1,6 +1,6 @@
 using Unity.Collections;
 
-namespace Game.ECS.Base.Component
+namespace Game.ECS.Base.Components
 {
     internal static class ComponentContainerUtility
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Unity.Collections;
-using Game.ECS.Base.Component;
+using Game.ECS.Base.Components;
 
 namespace Game.ECS.Base
 {

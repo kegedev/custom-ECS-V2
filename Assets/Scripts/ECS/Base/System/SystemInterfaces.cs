@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace Game.ECS.Base.System
+namespace Game.ECS.Base.Systems
 {
     internal interface ISystem { }
     internal interface IInitSystem : ISystem

@@ -1,6 +1,6 @@
 using UnityEngine;
 using Game.ECS.Base;
-using Game.ECS.Base.System;
+using Game.ECS.Base.Systems;
 
 public class GameController : MonoBehaviour
 {

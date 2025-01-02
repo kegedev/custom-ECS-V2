@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Game.ECS.Base.System
+namespace Game.ECS.Base.Systems
 {
     internal class SystemManager : MonoBehaviour
     {

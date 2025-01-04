@@ -1,17 +1,40 @@
 using System.Collections.Generic;
 using Unity.Collections;
 using Game.ECS.Base.Components;
+using Game.Factory.Base;
+using Game.Pool;
+using System.ComponentModel;
+using System;
 
 namespace Game.ECS.Base
 {
-    internal class ECSWorld
+    public class ECSWorld
     {
-        internal int EntityIdCounter;
-        internal int EntityCount;
-        internal NativeArray<int> Entities; //tüm entitylerin IDleri
-        internal Dictionary<ushort, object> ComponentContainers; //<componentMask,ComponentContainer>
+        public int EntityIdCounter;
+        public int EntityCount;
+        public NativeArray<int> Entities; //tüm entitylerin IDleri
+        public Dictionary<ComponentMask, object> ComponentContainers; //<componentMask,ComponentContainer>
 
-        internal int CreateNewEntity()
+        public ECSWorld(int initialEntityCount) 
+        {
+            Entities = new NativeArray<int>(initialEntityCount, Allocator.Persistent);
+            ComponentContainers= new Dictionary<ComponentMask, object>();
+        }
+
+        public void AddComponentToEntity<T>(int entityId, ComponentMask componentMask, object component) where T : struct
+        {
+            if (component == null)
+                throw new Exception("Component cannot be null.");
+
+            if (!ComponentContainers.TryGetValue(componentMask, out var componentContainer))
+            {
+                componentContainer = new ComponentContainer<T>();
+                ComponentContainers.Add(componentMask, componentContainer);
+            }
+
+            ((ComponentContainer<T>)componentContainer).AddComponent(entityId, (T)component);
+        }
+        public int CreateNewEntity()
         {
             if (EntityCount >= Entities.Length)
             {
@@ -25,8 +48,7 @@ namespace Game.ECS.Base
             return newEntityId;
         }
 
-
-        internal void DisposeEntity(int entityId)
+        public void DisposeEntity(int entityId)
         {
             for (int i = 0; i < EntityCount; i++)
             {
@@ -37,9 +59,10 @@ namespace Game.ECS.Base
 
                     foreach (var componentContainer in ComponentContainers.Values)
                     {
-                        if (componentContainer is ComponentContainer<PositionComponent> positionContainer)
+                        
+                        if (componentContainer is ComponentContainer<CoordinateComponent> positionContainer)
                         {
-                            ComponentContainerUtility.RemoveComponent(ref positionContainer, entityId);
+                           // ComponentContainerUtility.RemoveComponent(ref positionContainer, entityId);
                         }
 
                         else
@@ -56,11 +79,11 @@ namespace Game.ECS.Base
         }
 
 
-        internal void ResizeEntityArray(ref NativeArray<int> entities)
+        public void ResizeEntityArray(ref NativeArray<int> entities)
         {
             int newSize = entities.Length * 2;
             NativeArray<int> newEntities = new NativeArray<int>(newSize, Allocator.Persistent);
-
+            //newEntities.CopyFrom(Entities);
             NativeArray<int>.Copy(entities, newEntities, entities.Length);
 
             entities.Dispose();
@@ -68,7 +91,7 @@ namespace Game.ECS.Base
             entities = newEntities;
         }
 
-        public void AddComponentContainer<T>(ushort componentMask) where T : struct
+        public void AddComponentContainer<T>(ComponentMask componentMask) where T : struct
         {
             if (ComponentContainers.ContainsKey(componentMask))
             {
@@ -85,7 +108,7 @@ namespace Game.ECS.Base
             ComponentContainers.Add(componentMask, newContainer);
         }
 
-        public ComponentContainer<T> GetComponentContainer<T>(ushort key) where T : struct
+        public ComponentContainer<T> GetComponentContainer<T>(ComponentMask key) where T : struct
         {
             if (ComponentContainers.ContainsKey(key))
             {

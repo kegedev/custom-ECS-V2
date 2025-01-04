@@ -2,9 +2,9 @@ using Unity.Collections;
 
 namespace Game.ECS.Base.Components
 {
-    internal static class ComponentContainerUtility
+    public static class ComponentContainerUtility
     {
-        internal static void AddComponent<T>(ref ComponentContainer<T> componentContainer, int entityId, T component) where T : struct
+        public static void AddComponent<T>(ref ComponentContainer<T> componentContainer, int entityId, T component) where T : struct
         {
             if (componentContainer.EntityCount >= componentContainer.EntityIds.Length)
             {
@@ -16,7 +16,7 @@ namespace Game.ECS.Base.Components
             componentContainer.EntityCount++;
         }
 
-        internal static T GetComponent<T>(ref ComponentContainer<T> componentContainer, int entityId) where T : struct
+        public static T GetComponent<T>(ref ComponentContainer<T> componentContainer, int entityId) where T : struct
         {
             for (int i = 0; i < componentContainer.EntityCount; i++)
             {
@@ -29,7 +29,7 @@ namespace Game.ECS.Base.Components
             throw new System.Exception($"Entity ID {entityId} not found in the container.");
         }
 
-        internal static void RemoveComponent<T>(ref ComponentContainer<T> componentContainer, int entityId) where T : struct
+        public static void RemoveComponent<T>(ref ComponentContainer<T> componentContainer, int entityId) where T : struct
         {
             for (int i = 0; i < componentContainer.EntityCount; i++)
             {
@@ -45,7 +45,7 @@ namespace Game.ECS.Base.Components
             throw new System.Exception($"Entity ID {entityId} not found in the container.");
         }
 
-        internal static void ResizeComponentArray<T>(ref ComponentContainer<T> componentContainer) where T : struct
+        public static void ResizeComponentArray<T>(ref ComponentContainer<T> componentContainer) where T : struct
         {
             int newSize = componentContainer.EntityIds.Length * 2;
             NativeArray<int> newEntityIds = new NativeArray<int>(newSize, Allocator.Persistent);

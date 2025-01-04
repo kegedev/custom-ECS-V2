@@ -7,18 +7,18 @@ using Game.Pool;
 
 namespace Game.Factory
 {
-    internal class FactoryManager
+    public class FactoryManager
     {
         private PoolManager _poolManager;
-        internal FactoryManager(PoolManager poolManager)
+        public FactoryManager(PoolManager poolManager)
         {
             _poolManager = poolManager;
             InitializeFactories();
         }
 
-        internal Dictionary<Type, object> factories = new Dictionary<Type, object>();
+        public Dictionary<Type, object> factories = new Dictionary<Type, object>();
 
-        internal T GetInstance<T>(params object[] arguments)
+        public T GetInstance<T>(params object[] arguments)
         {
 
             if (factories.TryGetValue(typeof(T), out var factory))
@@ -28,7 +28,7 @@ namespace Game.Factory
             else
             {
 
-                throw new Exception("No Factory Assigned");
+                throw new Exception("No Factory Assigned "+ typeof(T));
             }
 
         }
@@ -46,7 +46,7 @@ namespace Game.Factory
         //    }
         //}
 
-        internal void AddFactory<T>(BaseFactory<T> factory) where T : new()
+        public void AddFactory<T>(BaseFactory<T> factory) where T : new()
         {
             factories.Add(typeof(T), factory);
         }
@@ -56,12 +56,12 @@ namespace Game.Factory
             //AddFactory(new PositionComponentFactory());
             //AddFactory(new ScaleComponentFactory());
             //AddFactory(new RotationComponentFactory());
-            //AddFactory(new TileComponentFactory());
+            AddFactory(new TileComponentFactory());
             //AddFactory(new QuadtreeLeafComponentFactory());
-            //AddFactory(new RenderComponentFactory());
+            AddFactory(new RenderComponentFactory());
             //AddFactory(new MoverComponentFactory());
             //AddFactory(new SoldierComponentFactory());
-            //AddFactory(new CoordinateComponentFactory());
+            AddFactory(new CoordinateComponentFactory());
             //AddFactory(new DynamicRenderComponentFactory());
 
         }

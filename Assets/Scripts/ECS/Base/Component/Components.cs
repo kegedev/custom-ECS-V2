@@ -1,11 +1,21 @@
+using UnityEngine;
 using Unity.Mathematics;
 
 
 namespace Game.ECS.Base.Components
 {
-    internal struct PositionComponent
+    public struct CoordinateComponent
     {
-        internal float3 Position;
+        public int2 Coordinate;
+    }
+
+    public struct TileComponent
+    {
+        public int MoverIndex;
+    }
+    public struct RenderComponent
+    {
+        public Matrix4x4 TRS;
     }
 }
 

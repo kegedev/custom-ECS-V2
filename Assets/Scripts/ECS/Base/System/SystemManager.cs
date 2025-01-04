@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.ECS.Base.Systems
 {
-    internal class SystemManager
+    public class SystemManager
     {
         private ECSWorld GameWorld;
 
@@ -17,7 +17,7 @@ namespace Game.ECS.Base.Systems
         private IUpdateSystem[] updateSystemsArray;
 
 
-        internal SystemManager(ECSWorld gameWorld)
+        public SystemManager(ECSWorld gameWorld)
         {
             GameWorld = gameWorld;
 
@@ -27,7 +27,7 @@ namespace Game.ECS.Base.Systems
             _sharedData = new List<ISharedData>();
         }
 
-        internal void AddSystem(ISystem system)
+        public void AddSystem(ISystem system)
         {
             if (system is IInitSystem initSystem)
             {
@@ -46,7 +46,7 @@ namespace Game.ECS.Base.Systems
 
         }
 
-        internal void Init()
+        public void Init()
         {
 
             updateSystemsArray = updateSystems.ToArray();
@@ -55,7 +55,7 @@ namespace Game.ECS.Base.Systems
 
         }
 
-        internal void InitSystems()
+        public void InitSystems()
         {
             foreach (var system in initSystems)
             {
@@ -63,7 +63,7 @@ namespace Game.ECS.Base.Systems
             }
         }
 
-        internal void UpdateSystems()
+        public void UpdateSystems()
         {
             foreach (var system in updateSystems)
             {
@@ -80,12 +80,12 @@ namespace Game.ECS.Base.Systems
         }
 
 
-        internal void AddSharedData(ISharedData sharedObject)
+        public void AddSharedData(ISharedData sharedObject)
         {
             _sharedData.Add(sharedObject);
         }
 
-        internal object GetSharedData<T>() where T : struct
+        public object GetSharedData<T>() where T : struct
         {
             foreach (var item in _sharedData)
             {
@@ -94,7 +94,7 @@ namespace Game.ECS.Base.Systems
             return null;
         }
 
-        internal ECSWorld GetWorld()
+        public ECSWorld GetWorld()
         {
             return GameWorld;
         }

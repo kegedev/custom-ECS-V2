@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Factory.Base
 {
-    internal abstract class BaseFactory<T>
+    public abstract class BaseFactory<T>
     {
         protected abstract T Create(params object[] arguments);
         protected abstract T Update(ref T component, params object[] arguments);

@@ -3,24 +3,24 @@ using UnityEngine;
 
 namespace Game.ECS.Base.Systems
 {
-    internal interface ISystem { }
-    internal interface IInitSystem : ISystem
+    public interface ISystem { }
+    public interface IInitSystem : ISystem
     {
-        internal void Init(SystemManager systemManager);
+        public void Init(SystemManager systemManager);
     }
 
-    internal interface IUpdateSystem : ISystem
+    public interface IUpdateSystem : ISystem
     {
-        internal void Update(SystemManager systemManager);
+        public void Update(SystemManager systemManager);
     }
 
-    internal interface IDisposeSystem : ISystem
+    public interface IDisposeSystem : ISystem
     {
-        internal void Dispose(SystemManager systemManager);
+        public void Dispose(SystemManager systemManager);
     }
 
 
-    internal interface ISharedData
+    public interface ISharedData
     {
 
     }

@@ -9,7 +9,9 @@ using Game.ECS.Base.Components;
 public class GameController: MonoBehaviour
 {
     private ECSWorld _gameWorld;
+    private ECSWorld _UIWorld;
     private SystemManager _systemManager;
+    [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
     void Start()
@@ -35,36 +37,24 @@ public class GameController: MonoBehaviour
         });
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
         _systemManager.AddSystem(new RenderSystem());
-
+        _systemManager.AddSystem(new InputSystem(_camera));
+        _systemManager.AddSystem(new QuadtreeCreationSystem(factoryManager));
+        SelectionSystem selectionSystem = new SelectionSystem();
+        QuerySystem.ProcessSelection += selectionSystem.ProcessSelection;
         _systemManager.InitSystems();
 
         Debug.Log(_gameWorld.ComponentContainers.Count);
-      
-            ComponentContainer<RenderComponent> container = (ComponentContainer<RenderComponent>)_gameWorld.ComponentContainers[ComponentMask.RenderComponent];
 
-            
-            Debug.Log(container.EntityCount);
+        Debug.Log(_gameWorld.QuadtreeNodeIndexes.Length);
+        Debug.Log(_gameWorld.QuadtreeLeafIndexes.Length);
 
-            foreach (var item1 in container.Components)
-            {
-                Debug.Log(item1.TRS); 
-                
-            }
-
-        //ComponentContainer<TileComponent> containert = (ComponentContainer<TileComponent>)_gameWorld.ComponentContainers[ComponentMask.TileComponent];
-
-
-        //Debug.Log(containert.EntityCount);
-
-        //foreach (var item1 in containert.Components)
-        //{
-        //    Debug.Log(item1.MoverIndex);
-
-        //}
+  
     }
 
     private void Update()
     {
         _systemManager.UpdateSystems();
     }
+
+
 }

@@ -44,7 +44,7 @@ namespace Game.ECS.Systems
                             int absoluteX = x + xCN * chunkXSize;
                             int absoluteY = y + yCN * chunkYSize;
                             int2 coordinate = new int2(absoluteX, absoluteY);
-                            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0),Quaternion.identity,Vector3.one);
+                            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0),Quaternion.identity,Vector3.one*0.95f);
 
                             if (absoluteX >= MapSettings.MapWidth || absoluteY >= MapSettings.MapHeight)
                                 continue;
@@ -61,7 +61,11 @@ namespace Game.ECS.Systems
 
                             eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
                                                                          ComponentMask.RenderComponent,
-                                                                          _factoryManager.GetInstance<RenderComponent>(matrix));
+                                                                          _factoryManager.GetInstance<RenderComponent>(new object[2]{ matrix,0f }));
+                            eCSWorld.AddComponentToEntity<QuadTreeLeafComponent>(newEntityID,
+                                                                                 ComponentMask.QuadTreeLeafComponent,
+                                                                                 _factoryManager.GetInstance<QuadTreeLeafComponent>(newEntityID,new Rect((float)coordinate.x-0.5f,
+                                                                                                                                                         (float)coordinate.y - 0.5f, 1,1)));
 
 
 

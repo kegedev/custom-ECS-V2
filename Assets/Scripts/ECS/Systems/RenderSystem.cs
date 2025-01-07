@@ -22,7 +22,6 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     {
 
         RenderEntities(((ComponentContainer<RenderComponent>)_world.ComponentContainers[ComponentMask.RenderComponent]).Components);
-        Debug.Log(meshes[0]+" "+ materials[0] +" "+ ((ComponentContainer<RenderComponent>)_world.ComponentContainers[ComponentMask.RenderComponent]).Components.Length);
     }
 
     private void RenderEntities(NativeArray<RenderComponent> renderComponents)
@@ -30,7 +29,7 @@ public class RenderSystem : IInitSystem, IUpdateSystem
         const int batchSize = 1022;
         Matrix4x4[] batch = new Matrix4x4[batchSize];
         int batchCount = 0;
-        Debug.Log(renderComponents.Length);
+ 
         for (int i = 0; i < renderComponents.Length; i++)
         {
        

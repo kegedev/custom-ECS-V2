@@ -15,6 +15,12 @@ namespace Game.ECS.Base
         public NativeArray<int> Entities; //tüm entitylerin IDleri
         public Dictionary<ComponentMask, object> ComponentContainers; //<componentMask,ComponentContainer>
 
+        public NativeList<QuadTreeNodeData> quadTreeNodeDatas = new NativeList<QuadTreeNodeData>(Allocator.Persistent);
+        public NativeList<int> QuadtreeNodeIndexes = new NativeList<int>(Allocator.Persistent);
+        public NativeList<int> QuadtreeLeafIndexes = new NativeList<int>(Allocator.Persistent);
+        public int quadtreeNodeIndex = 0;
+        public QuadTreeNodeData TileQuadtreeRoot;
+
         public ECSWorld(int initialEntityCount) 
         {
             Entities = new NativeArray<int>(initialEntityCount, Allocator.Persistent);

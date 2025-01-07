@@ -57,7 +57,7 @@ namespace Game.Factory
             //AddFactory(new ScaleComponentFactory());
             //AddFactory(new RotationComponentFactory());
             AddFactory(new TileComponentFactory());
-            //AddFactory(new QuadtreeLeafComponentFactory());
+            AddFactory(new QuadtreeLeafComponentFactory());
             AddFactory(new RenderComponentFactory());
             //AddFactory(new MoverComponentFactory());
             //AddFactory(new SoldierComponentFactory());

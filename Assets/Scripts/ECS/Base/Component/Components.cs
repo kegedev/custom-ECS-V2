@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Mathematics;
+using System.ComponentModel;
 
 
 namespace Game.ECS.Base.Components
@@ -16,6 +17,13 @@ namespace Game.ECS.Base.Components
     public struct RenderComponent
     {
         public Matrix4x4 TRS;
+        public float TextureOffset;
+    }
+
+    public struct QuadTreeLeafComponent
+    {
+        public int LeafID;
+        public Rect Rect;
     }
 }
 

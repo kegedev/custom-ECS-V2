@@ -6,10 +6,10 @@ public enum ComponentMask : ushort
     TileComponent = 1 << 1,
     RenderComponent = 1 << 2,
     QuadTreeLeafComponent = 1 << 3,
+    MoverComponent = 1 << 4,
     //RotationComponent = 1 << 1,
     //ScaleComponent = 1 << 2,
     //StaticRenderComponent = 1 << 4,
     //SoldierComponent = 1 << 6,
-    //MoverComponent = 1 << 7,
     //DynamicRenderComponent = 1 << 9,
 }

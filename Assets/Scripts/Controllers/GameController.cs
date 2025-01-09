@@ -35,12 +35,25 @@ public class GameController: MonoBehaviour
         {
             Materials = new Material[] { _material }
         });
+
+        OccupancySystem occupancySystem = new OccupancySystem();
+        MoverCreationSystem moverCreationSystem = new MoverCreationSystem(factoryManager);
+        moverCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
+        moverCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+
+        InputSystem inputSystem = new InputSystem(_camera);
+        SelectionSystem selectionSystem = new SelectionSystem();
+        inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
+
+        _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
         _systemManager.AddSystem(new RenderSystem());
-        _systemManager.AddSystem(new InputSystem(_camera));
+        _systemManager.AddSystem(inputSystem);
         _systemManager.AddSystem(new QuadtreeCreationSystem(factoryManager));
-        SelectionSystem selectionSystem = new SelectionSystem();
-        QuerySystem.ProcessSelection += selectionSystem.ProcessSelection;
+        _systemManager.AddSystem(selectionSystem);
+        _systemManager.AddSystem(moverCreationSystem);
+
+
         _systemManager.InitSystems();
 
         Debug.Log(_gameWorld.ComponentContainers.Count);

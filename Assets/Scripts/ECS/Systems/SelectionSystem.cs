@@ -17,22 +17,33 @@ public class SelectionSystem : IInitSystem
         _world = systemManager.GetWorld();
     }
 
-    public void ProcessSelection(int2 targetTileCoord, int moverIndex)
+    public void ProcessSelection(int selectedTileId)
     {
-        Debug.Log(targetTileCoord);
-        if (SelectedMoverIndex == -1 && moverIndex != -1)
+        Debug.Log("SelectedTile  "+ selectedTileId);
+        int occupantEntityId = ((ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent]).GetComponent(selectedTileId).OccupantEntityID;
+        Debug.Log("SelectedTile occupant " + occupantEntityId);
+        if (((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
         {
-            SelectedMoverIndex = moverIndex;
+            Debug.Log("Tile has a Mover that Id is "+ occupantEntityId);
         }
-        else if (SelectedMoverIndex != -1 && moverIndex == -1)
+        else
         {
-            SetMoverPath(SelectedMoverIndex, targetTileCoord);
+            Debug.Log("Tile has no occupant");
         }
-        else if (SelectedMoverIndex != -1 && moverIndex != -1)
-        {
-            //move to neighbour tile  SetMoverPath(moverIndex, tileCoord);??
-        }
-        //  Debug.Log("Selected Mover index "+ SelectedMoverIndex);
+        //Debug.Log(occupantEntityId);
+        //if (SelectedMoverIndex == -1 && moverIndex != -1)
+        //{
+        //    SelectedMoverIndex = moverIndex;
+        //}
+        //else if (SelectedMoverIndex != -1 && moverIndex == -1)
+        //{
+        //    SetMoverPath(SelectedMoverIndex, targetTileCoord);
+        //}
+        //else if (SelectedMoverIndex != -1 && moverIndex != -1)
+        //{
+        //    //move to neighbour tile  SetMoverPath(moverIndex, tileCoord);??
+        //}
+        ////  Debug.Log("Selected Mover index "+ SelectedMoverIndex);
     }
 
 

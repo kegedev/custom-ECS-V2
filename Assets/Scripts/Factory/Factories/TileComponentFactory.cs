@@ -8,13 +8,13 @@ public class TileComponentFactory : BaseFactory<TileComponent>
     {
         return new TileComponent()
         {
-            MoverIndex = (int)arguments[0]
+            OccupantEntityID = (int)arguments[0]
         };
     }
 
     protected override TileComponent Update(ref TileComponent component, params object[] arguments)
     {
-        component.MoverIndex = (int)arguments[0];
+        component.OccupantEntityID = (int)arguments[0];
         return component;
     }
 }

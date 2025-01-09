@@ -41,6 +41,18 @@ namespace Game.ECS.Base.Components
             throw new Exception($"Entity ID {entityId} not found in the container.");
         }
 
+        public bool HasComponent(int entityId)
+        {
+            for (int i = 0; i < EntityCount; i++)
+            {
+                if (EntityIds[i] == entityId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void RemoveComponent(int entityId)
         {
             for (int i = 0; i < EntityCount; i++)
@@ -85,6 +97,7 @@ namespace Game.ECS.Base.Components
                 Components.Dispose();
             }
         }
+
     }
 
     public interface IComponentContainer : IDisposable

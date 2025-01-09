@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Unity.Mathematics;
 using System.ComponentModel;
+using Unity.Collections;
 
 
 namespace Game.ECS.Base.Components
@@ -12,7 +13,7 @@ namespace Game.ECS.Base.Components
 
     public struct TileComponent
     {
-        public int MoverIndex;
+        public int OccupantEntityID;
     }
     public struct RenderComponent
     {
@@ -24,6 +25,11 @@ namespace Game.ECS.Base.Components
     {
         public int LeafID;
         public Rect Rect;
+    }
+
+    public struct MoverComponent
+    {
+        public NativeArray<int2> Path;//buradan kaldırılacak (?)
     }
 }
 

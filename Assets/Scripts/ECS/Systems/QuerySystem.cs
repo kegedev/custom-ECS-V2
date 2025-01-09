@@ -7,8 +7,6 @@ using UnityEngine;
 internal static class QuerySystem
 {
 
-    internal static Action<int2, int> ProcessSelection;
-
     internal static int GetEntityId(ComponentContainer<QuadTreeLeafComponent> componentContainer,
                                    in NativeList<QuadTreeNodeData> quadTreeNodeDatas,
                                    in NativeList<int> QuadtreeNodeIndexes,
@@ -18,7 +16,7 @@ internal static class QuerySystem
     {
         if (!rootNode.Rect.Contains(point))
         {
-            Debug.LogError("Point is out of bounds of the root node.");
+            Debug.LogError("Point is out of bounds of the root node. "+ point);
             return -1;
         }
 
@@ -59,4 +57,6 @@ internal static class QuerySystem
         Debug.LogError("Leaf containing the point not found.");
         return -1;
     }
+
+ 
 }

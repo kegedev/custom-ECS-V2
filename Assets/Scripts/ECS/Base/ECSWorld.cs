@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Collections;
 using Game.ECS.Base.Components;
 using Game.Factory.Base;
@@ -12,9 +12,10 @@ namespace Game.ECS.Base
     {
         public int EntityIdCounter;
         public int EntityCount;
-        public NativeArray<int> Entities; //t�m entitylerin IDleri
+        public NativeArray<int> Entities; //tüm entitylerin IDleri
         public Dictionary<ComponentMask, object> ComponentContainers; //<componentMask,ComponentContainer>
 
+        //quadtree structuna cek burayı
         public NativeList<QuadTreeNodeData> quadTreeNodeDatas = new NativeList<QuadTreeNodeData>(Allocator.Persistent);
         public NativeList<int> QuadtreeNodeIndexes = new NativeList<int>(Allocator.Persistent);
         public NativeList<int> QuadtreeLeafIndexes = new NativeList<int>(Allocator.Persistent);
@@ -39,6 +40,16 @@ namespace Game.ECS.Base
             }
 
             ((ComponentContainer<T>)componentContainer).AddComponent(entityId, (T)component);
+        }
+        public T GetComponentOfEntity<T>(int entityId, ComponentMask componentMask) where T : struct
+        {
+            if (!ComponentContainers.TryGetValue(componentMask, out var componentContainer))
+            {
+                componentContainer = new ComponentContainer<T>();
+                ComponentContainers.Add(componentMask, componentContainer);
+            }
+
+           return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
         }
         public int CreateNewEntity()
         {

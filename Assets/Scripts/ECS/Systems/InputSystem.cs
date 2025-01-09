@@ -16,6 +16,8 @@ public class InputSystem : IInitSystem, IUpdateSystem
     private ECSWorld _world;
 
 
+    public Action<int> ProcessSelection;
+
     public InputSystem(Camera camera)
     {
         _camera = camera;
@@ -53,12 +55,13 @@ public class InputSystem : IInitSystem, IUpdateSystem
         Vector2 intersection = new Vector2(worldPosition.x + 0.5f, worldPosition.y + 0.5f);
         Debug.Log("Input point: " + intersection);
 
-        QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
+        int selectedTileId= QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
                                    _world.quadTreeNodeDatas,
                                    _world.QuadtreeNodeIndexes,
                                    _world.QuadtreeLeafIndexes,
                                    _world.TileQuadtreeRoot,
                                    intersection);
+        ProcessSelection.Invoke(selectedTileId);
     }
 
 

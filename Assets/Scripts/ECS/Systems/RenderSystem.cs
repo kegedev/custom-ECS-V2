@@ -26,26 +26,32 @@ public class RenderSystem : IInitSystem, IUpdateSystem
 
     private void RenderEntities(NativeArray<RenderComponent> renderComponents)
     {
-        const int batchSize = 1022;
+        const int batchSize = 1024;
         Matrix4x4[] batch = new Matrix4x4[batchSize];
+        Vector4[] offsets = new Vector4[batchSize];
         int batchCount = 0;
- 
+        MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+
         for (int i = 0; i < renderComponents.Length; i++)
         {
-       
-            batch[batchCount++] = renderComponents[i].TRS;
-
+            batch[batchCount] = renderComponents[i].TRS;
+           
+            offsets[batchCount++] = new Vector4(0.25f, 0.5f,renderComponents[i].TextureOffset.x, renderComponents[i].TextureOffset.y);
+           
             if (batchCount == batchSize)
             {
-                Graphics.DrawMeshInstanced(meshes[0], 0, materials[0], batch);
+                propertyBlock.SetVectorArray("_MainTex_ST", offsets);
+                Graphics.DrawMeshInstanced(meshes[0], 0, materials[0], batch, batchCount, propertyBlock);
                 batchCount = 0;
             }
         }
 
-    
         if (batchCount > 0)
         {
-            Graphics.DrawMeshInstanced(meshes[0], 0, materials[0], batch);
+            propertyBlock.SetVectorArray("_MainTex_ST", offsets);
+            Graphics.DrawMeshInstanced(meshes[0], 0, materials[0], batch, batchCount, propertyBlock);
+            batchCount = 0;
         }
     }
+
 }

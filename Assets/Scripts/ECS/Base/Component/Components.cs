@@ -17,7 +17,7 @@ namespace Game.ECS.Base.Components
     public struct RenderComponent
     {
         public Matrix4x4 TRS;
-        public float TextureOffset;
+        public float2 TextureOffset;
     }
 
     public struct QuadTreeLeafComponent

@@ -61,7 +61,7 @@ namespace Game.ECS.Systems
 
                             eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
                                                                          ComponentMask.RenderComponent,
-                                                                          _factoryManager.GetInstance<RenderComponent>(new object[2]{ matrix,0f }));
+                                                                          _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, new float2((((absoluteX+absoluteY)%2==0)?0:0.25f),0.5f) }));
                             eCSWorld.AddComponentToEntity<QuadTreeLeafComponent>(newEntityID,
                                                                                  ComponentMask.QuadTreeLeafComponent,
                                                                                  _factoryManager.GetInstance<QuadTreeLeafComponent>(newEntityID,new Rect((float)coordinate.x-0.5f,

@@ -29,9 +29,9 @@ namespace Game.ECS.Systems
 
         public void CreateMovers(ECSWorld eCSWorld)
         {
-            for (int x = 0; x < 100; x++)
+            for (int x = 0; x < 10; x++)
             {
-                for (int y = 0; y < 100; y++)
+                for (int y = 0; y < 10; y++)
                 {
                     int absoluteX = UnityEngine.Random.Range(0,120);
                     int absoluteY = UnityEngine.Random.Range(0, 120);
@@ -51,7 +51,7 @@ namespace Game.ECS.Systems
 
                     eCSWorld.AddComponentToEntity<MoverComponent>(newEntityID,
                                                                   ComponentMask.MoverComponent,
-                                                                  _factoryManager.GetInstance<MoverComponent>(new NativeArray<int2>(1,Allocator.Persistent)));
+                                                                  _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
 
                     eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
                                                                  ComponentMask.RenderComponent,
@@ -59,6 +59,7 @@ namespace Game.ECS.Systems
                     SetOccupant.Invoke(coordinateComponent, newEntityID);
                 }
             }
+            Debug.Log("Mover COujnt "+eCSWorld.GetComponentContainer<MoverComponent>(ComponentMask.MoverComponent).EntityCount);
         }
     }
 

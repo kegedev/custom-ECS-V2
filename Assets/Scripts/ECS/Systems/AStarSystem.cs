@@ -1,7 +1,10 @@
 using Game.ECS.Base;
 using Game.ECS.Base.Components;
 using Game.ECS.Base.Systems;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -100,28 +103,10 @@ namespace Game.ECS.Systems
                     return RetracePath(allNodes, startTile, goalTile);
                 }
 
-                var neighbors = new NativeArray<AStarNode>(8, Allocator.Persistent);
-                GetNeighboursJob getNeighboursJob = new GetNeighboursJob()
-                {
-                    CurrentNode = currentTile,
-                    Neighbours = neighbors,
-                    Directions = directions,
-                    MapWidth = mapWidth,
-                    MapHeight = mapHeight,
-                    LeafComponentContainer=_world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
-                    CoordinateComponentContainer= _world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent),
-                    TileComponentContainer= _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent),
-                    QuadTreeNodeDatas = _world.quadTreeNodeDatas,
-                    QuadTreeNodeIndexes = _world.QuadtreeNodeIndexes,
-                    QuadTreeLeafIndexes = _world.QuadtreeLeafIndexes,
-                    TileQuadtreeRoot = _world.TileQuadtreeRoot,
-                };
+                var neighbors = GetNeighbors(currentTile);
+            
 
-                JobHandle handle = getNeighboursJob.Schedule(directions.Length, 10);
-
-                handle.Complete();
-
-                for (int i = 0; i < neighbors.Length; i++)
+                for (int i = 0; i < neighbors.Count; i++)
                 {
                     AStarNode aStarNode = neighbors[i];
                     aStarNode.ParentId = GetIndexFromId(allNodes, currentTile.NodeID);
@@ -130,7 +115,7 @@ namespace Game.ECS.Systems
                     allNodes.Add(neighbors[i]);
                 }
 
-                for (int i = 0; i < neighbors.Length; i++)
+                for (int i = 0; i < neighbors.Count; i++)
                 {
                     if (neighbors[i].MoverIndex != -1 || ListContainsNode(closedList, neighbors[i]))
                         continue;
@@ -150,7 +135,7 @@ namespace Game.ECS.Systems
                         }
                     }
                 }
-                neighbors.Dispose();
+              
             }
             return null;
         }
@@ -168,64 +153,88 @@ namespace Game.ECS.Systems
             path.Reverse();
             return path;
         }
-        private struct GetNeighboursJob : IJobParallelFor
+
+        private List<AStarNode> GetNeighbors(AStarNode CurrentNode)
         {
-            public AStarNode CurrentNode;
-            [WriteOnly] public NativeArray<AStarNode> Neighbours;
-            [ReadOnly] public NativeArray<int2> Directions;
-            public int MapWidth;
-            public int MapHeight;
-            [NativeDisableUnsafePtrRestriction]
-            [ReadOnly] public ComponentContainer<QuadTreeLeafComponent> LeafComponentContainer;
-            [ReadOnly] public ComponentContainer<CoordinateComponent> CoordinateComponentContainer;
-            [ReadOnly] public ComponentContainer<TileComponent> TileComponentContainer;
-            [NativeDisableUnsafePtrRestriction]
-            [ReadOnly] public NativeList<QuadTreeNodeData> QuadTreeNodeDatas;
-            [ReadOnly] public NativeList<int> QuadTreeNodeIndexes;
-            [ReadOnly] public NativeList<int> QuadTreeLeafIndexes;
-            [ReadOnly] public QuadTreeNodeData TileQuadtreeRoot;
-            public void Execute(int index)
+            List<AStarNode> neighbors = new List<AStarNode>();
+
+            foreach (var direction in MapSettings.Directions)
             {
-                Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + Directions[index].x, CurrentNode.Coordinate.y + Directions[index].y);
-                if (checkCoordinate.x >= 0 && checkCoordinate.x < MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapHeight)
+                Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + direction.x, CurrentNode.Coordinate.y + direction.y);
+                if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                 {
-                    int tileId=QuerySystem.GetEntityId(LeafComponentContainer,
-                                                       QuadTreeNodeDatas,
-                                                       QuadTreeNodeIndexes,
-                                                       QuadTreeLeafIndexes,
-                                                       TileQuadtreeRoot,
-                                                       checkCoordinate);
-
-                    var coordinateComp = CoordinateComponentContainer.GetComponent(tileId);
-                    var tileComp = TileComponentContainer.GetComponent(tileId);
-                    Neighbours[index] = new AStarNode()
+                    if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                     {
-                        MoverIndex = tileComp.OccupantEntityID,
-                        Coordinate = coordinateComp.Coordinate
-                    };
+                        int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+                                                           _world.quadTreeNodeDatas,
+                                                           _world.QuadtreeNodeIndexes,
+                                                           _world.QuadtreeLeafIndexes,
+                                                           _world.TileQuadtreeRoot,
+                                                           checkCoordinate);
 
-                    //EntityIndexReference entityChunkIndexReference = QuerySystem.GetEntityChunkIndexReference(TileChunks,
-                    //                                                                                          QuadtreeChunk,
-                    //                                                                                          QuadTreeNodeDatas,
-                    //                                                                                          QuadTreeNodeIndexes,
-                    //                                                                                          QuadTreeLeafIndexes,
-                    //                                                                                          TileQuadtreeRoot,
-                    //                                                                                          checkCoordinate);
-                    //Chunk chunk = QuerySystem.GetChunkByIndexReference(TileChunks, entityChunkIndexReference);
+                        var coordinateComp = _world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent).GetComponent(tileId);
+                        var tileComp = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent).GetComponent(tileId);
+                        neighbors.Add(new AStarNode()
+                        {
+                            MoverIndex = tileComp.OccupantEntityID,
+                            Coordinate = coordinateComp.Coordinate
+                        });
 
-                    //var coordinateComp = ChunkUtility.GetEntityComponentValueAtIndex<CoordinateComponent>(chunk, entityChunkIndexReference.Index);
-                    //var tileComp = ChunkUtility.GetEntityComponentValueAtIndex<TileComponent>(chunk, entityChunkIndexReference.Index);
 
-                    //Neighbours[index] = new AStarNode()
-                    //{
-                    //    MoverIndex = tileComp.MoverIndex,
-                    //    Coordinate = coordinateComp.Coordinate
-                    //};
+
+                    }
+
 
                 }
-
             }
+
+           
+
+            return neighbors;
         }
+        //[BurstCompile]
+        //private struct GetNeighboursJob : IJobParallelFor
+        //{
+        //    public AStarNode CurrentNode;
+        //    [WriteOnly] public NativeArray<AStarNode> Neighbours;
+        //    [ReadOnly] public NativeArray<int2> Directions;
+        //    public int MapWidth;
+        //    public int MapHeight;
+        //    [NativeDisableUnsafePtrRestriction]
+        //    [ReadOnly] public ComponentContainer<QuadTreeLeafComponent> LeafComponentContainer;
+        //    [ReadOnly] public ComponentContainer<CoordinateComponent> CoordinateComponentContainer;
+        //    [ReadOnly] public ComponentContainer<TileComponent> TileComponentContainer;
+        //    [NativeDisableUnsafePtrRestriction]
+        //    [ReadOnly] public NativeList<QuadTreeNodeData> QuadTreeNodeDatas;
+        //    [ReadOnly] public NativeList<int> QuadTreeNodeIndexes;
+        //    [ReadOnly] public NativeList<int> QuadTreeLeafIndexes;
+        //    [ReadOnly] public QuadTreeNodeData TileQuadtreeRoot;
+        //    public void Execute(int index)
+        //    {
+        //        Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + Directions[index].x, CurrentNode.Coordinate.y + Directions[index].y);
+        //        if (checkCoordinate.x >= 0 && checkCoordinate.x < MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapHeight)
+        //        {
+        //            int tileId=QuerySystem.GetEntityId(LeafComponentContainer,
+        //                                               QuadTreeNodeDatas,
+        //                                               QuadTreeNodeIndexes,
+        //                                               QuadTreeLeafIndexes,
+        //                                               TileQuadtreeRoot,
+        //                                               checkCoordinate);
+
+        //            var coordinateComp = CoordinateComponentContainer.GetComponent(tileId);
+        //            var tileComp = TileComponentContainer.GetComponent(tileId);
+        //            Neighbours[index] = new AStarNode()
+        //            {
+        //                MoverIndex = tileComp.OccupantEntityID,
+        //                Coordinate = coordinateComp.Coordinate
+        //            };
+
+
+
+        //        }
+
+        //    }
+        //}
 
         private float GetDistance(AStarNode a, AStarNode b)
         {

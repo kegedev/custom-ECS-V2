@@ -48,6 +48,9 @@ public class GameController: MonoBehaviour
         AStarSystem aStarSystem= new AStarSystem();
         selectionSystem.GetMoverPath += aStarSystem.GetMoverPath;
 
+        MovementSystem movementSystem = new MovementSystem();
+        movementSystem.SetTileOccupant += occupancySystem.SetTileOccupant;
+
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
         _systemManager.AddSystem(new RenderSystem());
@@ -56,6 +59,7 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(selectionSystem);
         _systemManager.AddSystem(moverCreationSystem);
         _systemManager.AddSystem(aStarSystem);
+        _systemManager.AddSystem(movementSystem);
 
         _systemManager.InitSystems();
 

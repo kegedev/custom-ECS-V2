@@ -39,36 +39,36 @@ namespace Game.ECS.Systems
                 Debug.Log("Tile has no occupant");
                 SetMoverPath(selectedTileId);
             }
-            //Debug.Log(occupantEntityId);
-
-            ////  Debug.Log("Selected Mover index "+ SelectedMoverIndex);
+   
         }
 
 
 
-        public void SetMoverPath(int targetTileId)//int moverIndex, int2 tagretCoordinate
+        public void SetMoverPath(int targetTileId)
         {
-            Debug.Log("Set mover Path");
-            //Profiler.BeginSample("SetMoverPath");
-            ComponentContainer<CoordinateComponent> coordinateCompContainer = (ComponentContainer<CoordinateComponent>)_world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
+          
+            var coordinateCompContainer = _world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
             int2 startCoord = coordinateCompContainer.GetComponent(SelectedMoverID).Coordinate;
             int2 targetCoord = coordinateCompContainer.GetComponent(targetTileId).Coordinate;
             NativeArray <int2> path = GetMoverPath.Invoke(SelectedMoverID, startCoord, targetCoord);
-            Debug.Log(startCoord +" "+ targetCoord + " PATH-> "+path.Length);
+            
             if (path.Length == 0)
             { ResetSelectedMoverIndex(); return; }
 
-            //ChunkUtility.GetEntityComponentValueAtIndex<MoverComponent>(_world.ChunkContainers[(ushort)(ComponentMask.CoordinateComponent | ComponentMask.SoldierComponent | ComponentMask.MoverComponent)][0], moverIndex).Path = path;
-            //ChunkUtility.GetEntityComponentValueAtIndex<MoverComponent>(_world.ChunkContainers[(ushort)(ComponentMask.CoordinateComponent | ComponentMask.SoldierComponent | ComponentMask.MoverComponent)][0], moverIndex).HasPath = true;
+            var moverComponentContainer = _world.GetComponentContainer<MoverComponent>(ComponentMask.MoverComponent);
+            var moverComponent = moverComponentContainer.GetComponent(SelectedMoverID);
+
+            moverComponent.Path = path;
+            moverComponent.HasPath = true;
+         
+            moverComponentContainer.UpdateComponent(SelectedMoverID,moverComponent);
 
             ResetSelectedMoverIndex();
-            //Profiler.EndSample();
         }
 
         public void SetSelectedMover(int selectedMoverIndex)
         {
             SelectedMoverID = selectedMoverIndex;
-            Debug.Log("SelectedTile occupant " + SelectedMoverID);
         }
         public int GetSelectedMoverIndex()
         {

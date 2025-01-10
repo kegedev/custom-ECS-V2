@@ -38,7 +38,18 @@ namespace Game.ECS.Base.Components
                 }
             }
 
-            throw new Exception($"Entity ID {entityId} not found in the container.");
+            throw new Exception("Entity ID not found in the container "+ entityId);
+        }
+
+        public void UpdateComponent(int entityId, T component) 
+        {
+            for (int i = 0; i < EntityCount; i++)
+            {
+                if (EntityIds[i] == entityId)
+                {
+                    Components[i]=component;
+                }
+            }
         }
 
         public bool HasComponent(int entityId)

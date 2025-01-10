@@ -29,7 +29,9 @@ namespace Game.ECS.Base.Components
 
     public struct MoverComponent
     {
-        public NativeArray<int2> Path;//buradan kaldırılacak (?)
+        public bool HasPath;
+        public int PathStepNumber;
+        public NativeArray<int2> Path;
     }
 }
 

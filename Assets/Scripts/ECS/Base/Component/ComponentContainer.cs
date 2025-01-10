@@ -3,7 +3,7 @@ using System;
 
 namespace Game.ECS.Base.Components
 {
-    public class ComponentContainer<T> : IComponentContainer where T : struct
+    public class ComponentContainer<T> where T : struct
     {
         public NativeArray<int> EntityIds;//bu componente sahip entityIDleri
         public NativeArray<T> Components; //EntityId indexine uyumlu Componentler
@@ -98,9 +98,5 @@ namespace Game.ECS.Base.Components
             }
         }
 
-    }
-
-    public interface IComponentContainer : IDisposable
-    {
     }
 }

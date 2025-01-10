@@ -7,6 +7,8 @@ public enum ComponentMask : ushort
     RenderComponent = 1 << 2,
     QuadTreeLeafComponent = 1 << 3,
     MoverComponent = 1 << 4,
+    AreaComponent= 1 << 5,
+    PlaceHolderComponent= 1 << 6,
     //RotationComponent = 1 << 1,
     //ScaleComponent = 1 << 2,
     //StaticRenderComponent = 1 << 4,

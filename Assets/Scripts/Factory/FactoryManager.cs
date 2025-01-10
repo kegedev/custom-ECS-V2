@@ -60,6 +60,8 @@ namespace Game.Factory
             AddFactory(new QuadtreeLeafComponentFactory());
             AddFactory(new RenderComponentFactory());
             AddFactory(new MoverComponentFactory());
+            AddFactory(new AreaComponentFactory());
+            AddFactory(new BuildingComponentFactory());
             //AddFactory(new SoldierComponentFactory());
             AddFactory(new CoordinateComponentFactory());
             //AddFactory(new DynamicRenderComponentFactory());

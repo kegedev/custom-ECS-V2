@@ -33,5 +33,16 @@ namespace Game.ECS.Base.Components
         public int PathStepNumber;
         public NativeArray<int2> Path;
     }
+
+    public struct AreaComponent
+    {
+        public int Width;
+        public int Height;
+    }
+
+    public struct BuildingComponent
+    {
+       
+    }
 }
 

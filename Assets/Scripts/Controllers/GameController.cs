@@ -41,6 +41,10 @@ public class GameController: MonoBehaviour
         moverCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
         moverCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
 
+        BuildingCreationSystem buildingCreationSystem = new BuildingCreationSystem(factoryManager);
+        buildingCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
+        buildingCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+
         InputSystem inputSystem = new InputSystem(_camera);
         SelectionSystem selectionSystem = new SelectionSystem();
         inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
@@ -60,6 +64,7 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(moverCreationSystem);
         _systemManager.AddSystem(aStarSystem);
         _systemManager.AddSystem(movementSystem);
+        _systemManager.AddSystem(buildingCreationSystem);
 
         _systemManager.InitSystems();
 

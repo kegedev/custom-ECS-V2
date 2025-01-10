@@ -24,7 +24,7 @@ public class RenderSystem : IInitSystem, IUpdateSystem
         RenderEntities(((ComponentContainer<RenderComponent>)_world.ComponentContainers[ComponentMask.RenderComponent]).Components);
     }
 
-    private void RenderEntities(NativeArray<RenderComponent> renderComponents)
+    private void RenderEntities(NativeArray<RenderComponent> renderComponents)//rendercomponent containerla gir buraya
     {
         const int batchSize = 1024;
         Matrix4x4[] batch = new Matrix4x4[batchSize];

@@ -11,10 +11,11 @@ namespace Game.ECS.Systems
 {
     public class MoverCreationSystem : IInitSystem
     {
-
+        ECSWorld world;
         private FactoryManager _factoryManager;
         public Action<CoordinateComponent, int> SetOccupant;
         public Func<CoordinateComponent, int> GetOccupant;
+        public Func<int> GetSelectedBuildingId;
 
         public MoverCreationSystem(FactoryManager factoryManager)
         {
@@ -22,48 +23,45 @@ namespace Game.ECS.Systems
         }
         public void Init(SystemManager systemManager)
         {
-            ECSWorld eCSWorld = systemManager.GetWorld();
+            world = systemManager.GetWorld();
 
-            CreateMovers(eCSWorld);
         }
 
-        public void CreateMovers(ECSWorld world)
+        public void CreateMover(SoldierType soldierType)
         {
-            for (int x = 0; x < 10; x++)
-            {
-                for (int y = 0; y < 10; y++)
-                {
-                    int absoluteX = UnityEngine.Random.Range(0,120);
-                    int absoluteY = UnityEngine.Random.Range(0, 120);
-                    int2 coordinate = new int2(absoluteX, absoluteY);
-                    Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0), Quaternion.identity, Vector3.one * 0.95f);
+            int selectedBuildingId = GetSelectedBuildingId.Invoke();
 
-                    if (absoluteX >= MapSettings.MapWidth || absoluteY >= MapSettings.MapHeight)
-                        continue;
+            var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
+            var buildingRootCoordinateComponent = coordinateComponentContainer.GetComponent(selectedBuildingId);
+          
+            Debug.Log("sourceBuildingId "+ selectedBuildingId + " "+ soldierType);
 
-                    int newEntityID = world.CreateNewEntity();
-                   
-                    CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(coordinate);
+            int soldierSpawnTileId=QuerySystem.GetClosestUnoccupiedNeighbourOfArea(world, buildingRootCoordinateComponent.Coordinate,5,5);
 
-                    world.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                                       ComponentMask.CoordinateComponent,
-                                                                       coordinateComponent);
+            var spawnCoordinateComponent= coordinateComponentContainer.GetComponent(soldierSpawnTileId);
+            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(spawnCoordinateComponent.Coordinate.x, spawnCoordinateComponent.Coordinate.y, 0), Quaternion.identity, Vector3.one * 0.95f);
 
-                    world.AddComponentToEntity<MoverComponent>(newEntityID,
-                                                                  ComponentMask.MoverComponent,
-                                                                  _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
+            int newEntityID = world.CreateNewEntity();
 
-                    world.AddComponentToEntity<RenderComponent>(newEntityID,
-                                                                 ComponentMask.RenderComponent,
-                                                                  _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, ((absoluteX + absoluteY) % 2 == 0) ? MapConstants.SoldierOffsets[SoldierType.Soldier1] : MapConstants.SoldierOffsets[SoldierType.Soldier2] }));
-                    world.AddComponentToEntity<SoldierComponent>(newEntityID,
-                                                          ComponentMask.SoldierComponent,
-                                                          _factoryManager.GetInstance<SoldierComponent>(new object[] { ((absoluteX + absoluteY) % 2 == 0) ?SoldierType.Soldier1:SoldierType.Soldier2 }));
-                    SetOccupant.Invoke(coordinateComponent, newEntityID);
-                }
-            }
-           
+            CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(spawnCoordinateComponent.Coordinate);
+
+            world.AddComponentToEntity<CoordinateComponent>(newEntityID,
+                                                               ComponentMask.CoordinateComponent,
+                                                               coordinateComponent);
+
+            world.AddComponentToEntity<MoverComponent>(newEntityID,
+                                                          ComponentMask.MoverComponent,
+                                                          _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
+
+            world.AddComponentToEntity<RenderComponent>(newEntityID,
+                                                         ComponentMask.RenderComponent,
+                                                          _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, MapConstants.SoldierOffsets[soldierType] }));
+            world.AddComponentToEntity<SoldierComponent>(newEntityID,
+                                                  ComponentMask.SoldierComponent,
+                                                  _factoryManager.GetInstance<SoldierComponent>(new object[] { soldierType }));
+            SetOccupant.Invoke(coordinateComponent, newEntityID);
         }
+
     }
 
 }

@@ -33,7 +33,7 @@ namespace Game.ECS.Systems
             }
             int occupantEntityId = ((ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent]).GetComponent(selectedTileId).OccupantEntityID;
             int2 selectedTileCoordinate= ((ComponentContainer<CoordinateComponent>)_world.ComponentContainers[ComponentMask.CoordinateComponent]).GetComponent(selectedTileId).Coordinate;
-            if (((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
+            if (_world.ComponentContainers.ContainsKey(ComponentMask.MoverComponent) && ((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
             {
                 if (SelectedMoverID == -1)
                 {
@@ -99,6 +99,10 @@ namespace Game.ECS.Systems
         public int GetSelectedMoverIndex()
         {
             return SelectedMoverID;
+        }
+        public int GetSelectedBuildingId()
+        {
+            return SelectedBuildingID;
         }
 
         public void ResetSelectedMoverIndex()

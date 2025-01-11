@@ -64,6 +64,9 @@ public class GameController: MonoBehaviour
         selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
         selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
 
+        _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
+        moverCreationSystem.GetSelectedBuildingId += selectionSystem.GetSelectedBuildingId;
+
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
         _systemManager.AddSystem(new RenderSystem());

@@ -22,6 +22,7 @@ namespace Game.ECS.Systems
 
         public void Update(SystemManager systemManager)
         {
+            if (!systemManager.GetWorld().ComponentContainers.ContainsKey(ComponentMask.MoverComponent)) return;
             movementTimer += Time.deltaTime;
             if (movementTimer >= movementInterval)
             {

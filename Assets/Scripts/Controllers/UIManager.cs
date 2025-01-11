@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject _selectedUnitProduction;
 
     public Action<BuildingType> ConstructBuilding;
+    public Action<SoldierType> SpawnSoldier;
 
 
     public void SelectConstructBarrack()
@@ -24,6 +25,19 @@ public class UIManager : MonoBehaviour
     public void SelectConstructPowerPlant()
     {
         ConstructBuilding.Invoke(BuildingType.PowerPlant);
+    }
+
+    public void SpawnSoldier1()
+    {
+        SpawnSoldier.Invoke(SoldierType.Soldier1);
+    }
+    public void SpawnSoldier2()
+    {
+        SpawnSoldier.Invoke(SoldierType.Soldier2);
+    }
+    public void SpawnSoldier3()
+    {
+        SpawnSoldier.Invoke(SoldierType.Soldier3);
     }
 
     public void ShowSelectedBuilding(BuildingType buildingType,int health)

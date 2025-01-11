@@ -55,9 +55,10 @@ namespace Game.ECS.Base.Components
         public int Health;
     }
 
-    public struct DamageComponent
+    public struct AttackComponent
     {
         public int Damage;
+        public int TargetId;
     }
 }
 

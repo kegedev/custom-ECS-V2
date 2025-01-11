@@ -40,7 +40,7 @@ namespace Game.ECS.Systems
                     SetSelectedMover(occupantEntityId);
                     var soldierComponentContainer = (ComponentContainer<SoldierComponent>)_world.ComponentContainers[ComponentMask.SoldierComponent];
                     var healthComponentContainer = (ComponentContainer<HealthComponent>)_world.ComponentContainers[ComponentMask.HealthComponent];
-                    var damageComponentContainer = (ComponentContainer<DamageComponent>)_world.ComponentContainers[ComponentMask.DamageComponent];
+                    var damageComponentContainer = (ComponentContainer<AttackComponent>)_world.ComponentContainers[ComponentMask.AttackComponent];
                     var soldierComponent = soldierComponentContainer.GetComponent(SelectedMoverID);
                     var healthComponent = healthComponentContainer.GetComponent(SelectedMoverID);
                     var damageComponent = damageComponentContainer.GetComponent(SelectedMoverID);
@@ -49,7 +49,14 @@ namespace Game.ECS.Systems
                 else
                 {
                    int closestFreeNeighbour= QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
+                    var attackComponentContainer = _world.GetComponentContainer<AttackComponent>(ComponentMask.AttackComponent);
+                    var attackComponent = attackComponentContainer.GetComponent(SelectedMoverID);
+                    var tileComponentContainer = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
+                    var tileComponent = tileComponentContainer.GetComponent(selectedTileId);
+                    attackComponent.TargetId= tileComponent.OccupantEntityID;
+                    attackComponentContainer.UpdateComponent(SelectedMoverID, attackComponent);
                     SetMoverPath(closestFreeNeighbour);
+
                 }
             }else if(SelectedMoverID == -1 && occupantEntityId != -1)
             {
@@ -63,6 +70,13 @@ namespace Game.ECS.Systems
             }else if(SelectedMoverID != -1 && occupantEntityId != -1)
             {
                 Debug.Log("MOVE  TO BUILDING");
+                var attackComponentContainer = _world.GetComponentContainer<AttackComponent>(ComponentMask.AttackComponent);
+                var attackComponent = attackComponentContainer.GetComponent(SelectedMoverID);
+                var tileComponentContainer = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
+                var tileComponent = tileComponentContainer.GetComponent(selectedTileId);
+                attackComponent.TargetId = tileComponent.OccupantEntityID;
+                attackComponentContainer.UpdateComponent(SelectedMoverID, attackComponent);
+
                 int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
                 SetMoverPath(closestFreeNeighbour);
             }

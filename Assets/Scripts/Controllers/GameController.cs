@@ -78,6 +78,7 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(movementSystem);
         _systemManager.AddSystem(buildingCreationSystem);
         _systemManager.AddSystem(constructSystem);
+        _systemManager.AddSystem(new AttackSystem());
         _systemManager.InitSystems();
 
 

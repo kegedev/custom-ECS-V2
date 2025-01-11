@@ -62,7 +62,7 @@ namespace Game.Factory
             AddFactory(new SoldierComponentFactory());
             AddFactory(new CoordinateComponentFactory());
             AddFactory(new HealthComponentFactory());
-            AddFactory(new DamageComponentFactory());
+            AddFactory(new AttackComponentFactory());
 
         }
     }

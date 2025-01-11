@@ -61,6 +61,8 @@ public class GameController: MonoBehaviour
         constructSystem.SetGameState += _systemManager.UpdateGameState;
         constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
         selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
+        selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
+        selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
 
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));

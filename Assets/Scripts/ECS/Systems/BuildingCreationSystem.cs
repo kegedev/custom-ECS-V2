@@ -48,6 +48,9 @@ namespace Game.ECS.Systems
             world.AddComponentToEntity<AreaComponent>(newEntityID,
                                                           ComponentMask.AreaComponent,
                                                           _factoryManager.GetInstance<AreaComponent>(new object[] { 5, 5 }));
+            world.AddComponentToEntity<BuildingComponent>(newEntityID,
+                                                          ComponentMask.BuildingComponent,
+                                                          _factoryManager.GetInstance<BuildingComponent>(new object[] { buildingType }));
 
             //Placeholder creation for building
             for (int w = 0; w < 5; w++)

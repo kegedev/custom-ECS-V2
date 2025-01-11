@@ -68,6 +68,7 @@ namespace Game.ECS.Systems
                 if (currentTileId != -1) ClearPreview(world);
                 _previousOffsets.Clear();
                 _previewTileIds.Clear();
+                Debug.Log(_buildingType);
                 ConstructBuilding.Invoke(_buildingType, currentTileId);
             }
         }

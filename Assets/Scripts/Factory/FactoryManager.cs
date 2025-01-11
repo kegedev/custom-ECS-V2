@@ -53,18 +53,14 @@ namespace Game.Factory
 
         private void InitializeFactories()
         {
-            //AddFactory(new PositionComponentFactory());
-            //AddFactory(new ScaleComponentFactory());
-            //AddFactory(new RotationComponentFactory());
             AddFactory(new TileComponentFactory());
             AddFactory(new QuadtreeLeafComponentFactory());
             AddFactory(new RenderComponentFactory());
             AddFactory(new MoverComponentFactory());
             AddFactory(new AreaComponentFactory());
             AddFactory(new BuildingComponentFactory());
-            //AddFactory(new SoldierComponentFactory());
+            AddFactory(new SoldierComponentFactory());
             AddFactory(new CoordinateComponentFactory());
-            //AddFactory(new DynamicRenderComponentFactory());
 
         }
     }

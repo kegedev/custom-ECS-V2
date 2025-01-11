@@ -26,4 +26,46 @@ public class UIManager : MonoBehaviour
         ConstructBuilding.Invoke(BuildingType.PowerPlant);
     }
 
+    public void ShowSelectedBuilding(BuildingType buildingType,int health)
+    {
+        if(buildingType==BuildingType.Barrack)
+        {
+            _selectedUnitName.text = "BARRACK";
+            _selectedUnitProduction.SetActive(true);
+        }
+        else
+        {
+            _selectedUnitName.text = "POWER PLANT";
+            _selectedUnitProduction.SetActive(false);
+        }
+        _selectedUnitDamage.gameObject.SetActive(false);
+        _selectedUnitHealth.text=health.ToString();
+        _selectedUnitImage.material.SetTextureOffset("_MainTex", MapConstants.BuildingOffsets[buildingType]);
+    }
+
+    public void ShowSelectedSoldier(SoldierType soldierType,int health, int damage)
+    {
+        _selectedUnitProduction.SetActive(false);
+
+        switch (soldierType)
+        {
+            case SoldierType.None:
+                break;
+            case SoldierType.Soldier1:
+                _selectedUnitName.text = "Soldier1";
+                break;
+            case SoldierType.Soldier2:
+                _selectedUnitName.text = "Soldier2";
+                break;
+            case SoldierType.Soldier3:
+                _selectedUnitName.text = "Soldier3";
+                break;
+            default:
+                break;
+        }
+        _selectedUnitDamage.gameObject.SetActive(false);
+        _selectedUnitDamage.text= damage.ToString();
+        _selectedUnitHealth.text = health.ToString();
+        _selectedUnitImage.material.SetTextureOffset("_MainTex", MapConstants.SoldierOffsets[soldierType]);
+    }
 }

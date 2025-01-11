@@ -17,6 +17,8 @@ namespace Game.ECS.Systems
 
         public Func<int, int2, int2, NativeArray<int2>> GetMoverPath;
         public Action TryToConstruct;
+        public Action<SoldierType , int ,int> SoldierSelected;
+        public Action<BuildingType , int > BuildingSelected;
         public void Init(SystemManager systemManager)
         {
             _world = systemManager.GetWorld();
@@ -36,6 +38,9 @@ namespace Game.ECS.Systems
                 if (SelectedMoverID == -1)
                 {
                     SetSelectedMover(occupantEntityId);
+                    var soldierComponentContainer = (ComponentContainer<SoldierComponent>)_world.ComponentContainers[ComponentMask.SoldierComponent];
+                    var soldierComponent = soldierComponentContainer.GetComponent(SelectedMoverID);
+                    SoldierSelected.Invoke((SoldierType)soldierComponent.SoldierType, 20,30);
                 }
                 else
                 {
@@ -44,6 +49,10 @@ namespace Game.ECS.Systems
                 }
             }else if(SelectedMoverID == -1 && occupantEntityId != -1)
             {
+                SelectedBuildingID = occupantEntityId;
+                var buildingComponentContainer=(ComponentContainer<BuildingComponent>)_world.ComponentContainers[ComponentMask.BuildingComponent];
+                var buildingComponent= buildingComponentContainer.GetComponent(SelectedBuildingID); 
+                BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, 19);
                 Debug.Log("BUILDING SELECTED");
             }else if(SelectedMoverID != -1 && occupantEntityId != -1)
             {

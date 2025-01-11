@@ -42,7 +42,12 @@ namespace Game.ECS.Base.Components
 
     public struct BuildingComponent
     {
-       
+       public ushort BuildingType;
+    }
+
+    public struct SoldierComponent
+    {
+        public ushort SoldierType;
     }
 }
 

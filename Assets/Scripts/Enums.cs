@@ -9,10 +9,11 @@ public enum ComponentMask : ushort
     MoverComponent = 1 << 4,
     AreaComponent= 1 << 5,
     PlaceHolderComponent= 1 << 6,
+    BuildingComponent=1<< 7,
+    SoldierComponent = 1 << 8,
     //RotationComponent = 1 << 1,
     //ScaleComponent = 1 << 2,
     //StaticRenderComponent = 1 << 4,
-    //SoldierComponent = 1 << 6,
     //DynamicRenderComponent = 1 << 9,
 }
 

@@ -10,6 +10,7 @@ public static class MapConstants
         { TerrainType.LightGreen, new float2(0, 0.5f) },
         { TerrainType.DarkGreen, new float2(0.25f, 0.5f) }
     };
+
     public static readonly Dictionary<BuildingType, float2> BuildingOffsets = new()
     {
         { BuildingType.None, new float2(-1, -1) },
@@ -17,6 +18,7 @@ public static class MapConstants
         { BuildingType.PowerPlant, new float2(0.75f, 0.5f) },
         { BuildingType.PreviewRed, new float2(0, 0) },
     };
+
     public static readonly Dictionary<SoldierType, float2> SoldierOffsets = new()
     {
         { SoldierType.None, new float2(-1, -1) },

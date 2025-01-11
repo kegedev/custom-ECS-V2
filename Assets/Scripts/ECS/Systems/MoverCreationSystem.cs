@@ -27,7 +27,7 @@ namespace Game.ECS.Systems
             CreateMovers(eCSWorld);
         }
 
-        public void CreateMovers(ECSWorld eCSWorld)
+        public void CreateMovers(ECSWorld world)
         {
             for (int x = 0; x < 10; x++)
             {
@@ -41,21 +41,24 @@ namespace Game.ECS.Systems
                     if (absoluteX >= MapSettings.MapWidth || absoluteY >= MapSettings.MapHeight)
                         continue;
 
-                    int newEntityID = eCSWorld.CreateNewEntity();
+                    int newEntityID = world.CreateNewEntity();
                    
                     CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(coordinate);
 
-                    eCSWorld.AddComponentToEntity<CoordinateComponent>(newEntityID,
+                    world.AddComponentToEntity<CoordinateComponent>(newEntityID,
                                                                        ComponentMask.CoordinateComponent,
                                                                        coordinateComponent);
 
-                    eCSWorld.AddComponentToEntity<MoverComponent>(newEntityID,
+                    world.AddComponentToEntity<MoverComponent>(newEntityID,
                                                                   ComponentMask.MoverComponent,
                                                                   _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
 
-                    eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
+                    world.AddComponentToEntity<RenderComponent>(newEntityID,
                                                                  ComponentMask.RenderComponent,
                                                                   _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, ((absoluteX + absoluteY) % 2 == 0) ? MapConstants.SoldierOffsets[SoldierType.Soldier1] : MapConstants.SoldierOffsets[SoldierType.Soldier2] }));
+                    world.AddComponentToEntity<SoldierComponent>(newEntityID,
+                                                          ComponentMask.SoldierComponent,
+                                                          _factoryManager.GetInstance<SoldierComponent>(new object[] { ((absoluteX + absoluteY) % 2 == 0) ?SoldierType.Soldier1:SoldierType.Soldier2 }));
                     SetOccupant.Invoke(coordinateComponent, newEntityID);
                 }
             }

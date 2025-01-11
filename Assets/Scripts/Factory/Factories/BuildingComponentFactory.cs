@@ -8,13 +8,13 @@ public class BuildingComponentFactory : BaseFactory<BuildingComponent>
     {
         return new BuildingComponent()
         {
-            
+            BuildingType = (ushort)arguments[0],
         };
     }
 
     protected override BuildingComponent Update(ref BuildingComponent component, params object[] arguments)
     {
-      
+        component.BuildingType = (ushort)arguments[0];
         return component;
     }
 }

@@ -42,7 +42,7 @@ namespace Game.ECS.Systems
                         continue;
 
                     int newEntityID = eCSWorld.CreateNewEntity();
-                    Debug.Log("Mover created Id= "+newEntityID);
+                   
                     CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(coordinate);
 
                     eCSWorld.AddComponentToEntity<CoordinateComponent>(newEntityID,
@@ -59,7 +59,7 @@ namespace Game.ECS.Systems
                     SetOccupant.Invoke(coordinateComponent, newEntityID);
                 }
             }
-            Debug.Log("Mover COujnt "+eCSWorld.GetComponentContainer<MoverComponent>(ComponentMask.MoverComponent).EntityCount);
+           
         }
     }
 

@@ -8,25 +8,35 @@ using static UnityEditor.PlayerSettings;
 using UnityEngine.LightTransport;
 using Unity.Collections;
 using static UnityEditor.Progress;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace Game.ECS.Systems
 {
     public class ConstructSystem : IInitSystem, IUpdateSystem
     {
-   
+        ECSWorld world;
         public Func<Vector2> GetInputPos;
         int currentTileId=-1;
-        private NativeArray<int> _previewTileIds;
-        private NativeArray<float2> _previousOffsets;
+        private List<int> _previewTileIds;
+        private List<float2> _previousOffsets;
+        private BuildingType _buildingType=BuildingType.None;
+
+        public Action<GameState> SetGameState;
+        public Action<BuildingType,int> ConstructBuilding;
+        public ushort ActiveStateMask => (ushort)GameState.Construction;
+        bool isAreF = false;
         public void Init(SystemManager systemManager)
         {
-            _previewTileIds = new NativeArray<int>(25,Allocator.Persistent);
-            _previousOffsets=new NativeArray<float2>(25,Allocator.Persistent);
+            world=systemManager.GetWorld();
+            _previewTileIds = new List<int>();
+            _previousOffsets=new List<float2>();
             
         }
 
         public void Update(SystemManager systemManager)
         {
+          
             ECSWorld world=systemManager.GetWorld();
             int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
                                     world.quadTreeNodeDatas,
@@ -39,16 +49,33 @@ namespace Game.ECS.Systems
             {
                 if(currentTileId!=-1) ClearPreview(systemManager.GetWorld());
                 currentTileId = tileEntityId;
-                ShowPreview(world, CheckContructionArea(world), BuildingType.PowerPlant);
+                isAreF = CheckContructionArea(world);
+                ShowPreview(world, isAreF);
 
 
+            }
+
+       
+        }
+
+        public void TryToConstruct()
+        {
+            Debug.Log("TryToConstruct");
+            if(isAreF)
+            {
+                Debug.Log("TryToConstruct2 ");
+                SetGameState.Invoke(GameState.MainState);
+                if (currentTileId != -1) ClearPreview(world);
+                _previousOffsets.Clear();
+                _previewTileIds.Clear();
+                ConstructBuilding.Invoke(_buildingType, currentTileId);
             }
         }
 
         private bool CheckContructionArea(ECSWorld world)
         {
             bool isAreafree = true;
-            int counter = 0;
+         
             var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
             var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
             var tileComponentContainer = world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
@@ -61,7 +88,7 @@ namespace Game.ECS.Systems
                     int pcAbsoluteY = coordinate.y + h;
 
                     if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
-                        continue;
+                        return false;
                     int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
                                                    world.quadTreeNodeDatas,
                                                    world.QuadtreeNodeIndexes,
@@ -71,8 +98,8 @@ namespace Game.ECS.Systems
                     var renderComp = renderComponentContainer.GetComponent(tileId);
                     var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
                     var tileComp = tileComponentContainer.GetComponent(tileId);
-                    _previewTileIds[counter]=tileId;
-                    _previousOffsets[counter++] = renderComp.TextureOffset;
+                    _previewTileIds.Add(tileId);
+                    _previousOffsets.Add( renderComp.TextureOffset);
                     if (tileComp.OccupantEntityID!=-1) isAreafree = false;
                     renderComp.TextureOffset = new float2(0.5f, 0.5f);
                     renderComponentContainer.UpdateComponent(tileId, renderComp);
@@ -83,16 +110,17 @@ namespace Game.ECS.Systems
             return isAreafree;
         }
 
-        private void ShowPreview(ECSWorld world, bool isAreaFree, BuildingType buildingType)
+        private void ShowPreview(ECSWorld world, bool isAreaFree)
         {
             var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-      
-            for (int i = 0; i < 25; i++)
+
+            foreach (var previewTileId in _previewTileIds)
             {
-                var renderComp = renderComponentContainer.GetComponent(_previewTileIds[i]);
+             
+                var renderComp = renderComponentContainer.GetComponent(previewTileId);
          
-                renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree?buildingType:BuildingType.PreviewRed];
-                renderComponentContainer.UpdateComponent(_previewTileIds[i], renderComp);
+                renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree? _buildingType : BuildingType.PreviewRed];
+                renderComponentContainer.UpdateComponent(previewTileId, renderComp);
             }
     
         }
@@ -101,13 +129,23 @@ namespace Game.ECS.Systems
             int counter = 0;
             var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
           
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < _previewTileIds.Count; i++)
             {
                 var renderComp = renderComponentContainer.GetComponent(_previewTileIds[i]);
             
                 renderComp.TextureOffset = _previousOffsets[counter++];
                 renderComponentContainer.UpdateComponent(_previewTileIds[i], renderComp);
             }
+            _previousOffsets.Clear();
+            _previewTileIds.Clear();
         }
+
+        public void BuildingSelectedToConstruct(BuildingType buildingType)
+        {
+            _buildingType=buildingType;
+            SetGameState.Invoke(GameState.Construction);
+        }
+    
+    
     }
 }

@@ -2829,7 +2829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 789b1ef74eccdc64889a6cef1f07d4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uiManager: {fileID: 0}
+  _uiManager: {fileID: 909654732}
   _camera: {fileID: 519420031}
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
   _material: {fileID: 2100000, guid: 717f103a985392b4aa9d287d64a654a8, type: 2}

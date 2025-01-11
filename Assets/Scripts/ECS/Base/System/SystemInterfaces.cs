@@ -11,7 +11,7 @@ namespace Game.ECS.Base.Systems
 
     public interface IUpdateSystem : ISystem
     {
-
+        ushort ActiveStateMask { get; }
         public void Update(SystemManager systemManager);
     }
 

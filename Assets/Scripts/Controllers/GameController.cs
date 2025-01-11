@@ -22,7 +22,6 @@ public class GameController: MonoBehaviour
 
         _gameWorld = new ECSWorld(256);
         _systemManager = new SystemManager(_gameWorld);
-
         PoolManager poolManager = new PoolManager();
         FactoryManager factoryManager = new FactoryManager(poolManager);
 
@@ -58,6 +57,10 @@ public class GameController: MonoBehaviour
 
         ConstructSystem constructSystem = new ConstructSystem();
         constructSystem.GetInputPos += inputSystem.GetInputPosition;
+        _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
+        constructSystem.SetGameState += _systemManager.UpdateGameState;
+        constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
+        selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
 
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
@@ -72,10 +75,7 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(constructSystem);
         _systemManager.InitSystems();
 
-        Debug.Log(_gameWorld.ComponentContainers.Count);
 
-        Debug.Log(_gameWorld.QuadtreeNodeIndexes.Length);
-        Debug.Log(_gameWorld.QuadtreeLeafIndexes.Length);
 
   
     }

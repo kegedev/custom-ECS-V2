@@ -16,6 +16,8 @@ namespace Game.ECS.Base.Systems
 
         private IUpdateSystem[] updateSystemsArray;
 
+        private ushort _currentGameState=(ushort)GameState.MainState;
+
 
         public SystemManager(ECSWorld gameWorld)
         {
@@ -67,7 +69,7 @@ namespace Game.ECS.Base.Systems
         {
             foreach (var system in updateSystems)
             {
-                system.Update(this);
+               if((system.ActiveStateMask & _currentGameState)== _currentGameState) system.Update(this);
             }
         }
 
@@ -97,6 +99,15 @@ namespace Game.ECS.Base.Systems
         public ECSWorld GetWorld()
         {
             return GameWorld;
+        }
+
+        public GameState GetState()
+        {
+            return (GameState)_currentGameState;
+        }
+        public void UpdateGameState(GameState gameState)
+        {
+            if((ushort)gameState !=_currentGameState) _currentGameState = (ushort)gameState;
         }
     }
 }

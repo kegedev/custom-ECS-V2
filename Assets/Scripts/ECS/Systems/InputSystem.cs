@@ -8,6 +8,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using Game.ECS.Base.Components;
 using System.Drawing;
+using UnityEngine.EventSystems;
 
 namespace Game.ECS.Systems
 {
@@ -18,7 +19,9 @@ namespace Game.ECS.Systems
         private ECSWorld _world;
 
 
-        public Action<int> ProcessSelection;
+        public Action<int,GameState> ProcessSelection;
+
+        public ushort ActiveStateMask => (ushort)(GameState.Construction | GameState.MainState);
 
         public InputSystem(Camera camera)
         {
@@ -36,26 +39,26 @@ namespace Game.ECS.Systems
 
             _cameraController.MoveCamera(new Vector2(horizontal, vertical));
 
-            if (Input.mouseScrollDelta.y != 0)
+            if (Input.mouseScrollDelta.y != 0 && !EventSystem.current.IsPointerOverGameObject())
             {
                 _cameraController.Zoom(Input.mouseScrollDelta.y);
             }
-            if (Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
             {
 
-                GetClickPositionOnXYPlane(Input.mousePosition);
+                GetClickPositionOnXYPlane(Input.mousePosition,systemManager.GetState());
             }
         }
 
 
-        public void GetClickPositionOnXYPlane(Vector3 screenPosition)
+        public void GetClickPositionOnXYPlane(Vector3 screenPosition, GameState gameState)
         {
 
             Vector3 worldPosition = _camera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
 
 
-            Vector2 intersection = new Vector2(worldPosition.x + 0.5f, worldPosition.y + 0.5f);
-            Debug.Log("Input point: " + intersection);
+            Vector2 intersection = new Vector2(worldPosition.x , worldPosition.y );
+      
 
             int selectedTileId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
                                        _world.quadTreeNodeDatas,
@@ -63,7 +66,7 @@ namespace Game.ECS.Systems
                                        _world.QuadtreeLeafIndexes,
                                        _world.TileQuadtreeRoot,
                                        intersection);
-            ProcessSelection.Invoke(selectedTileId);
+            ProcessSelection.Invoke(selectedTileId, gameState);
         }
 
         public Vector2 GetInputPosition()

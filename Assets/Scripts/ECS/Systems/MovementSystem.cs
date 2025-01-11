@@ -14,6 +14,9 @@ namespace Game.ECS.Systems
         private float movementTimer = 0f;
         private const float movementInterval = 0.05f;
         public Action<CoordinateComponent, int> SetTileOccupant;
+
+        public ushort ActiveStateMask => (ushort)GameState.MainState;
+
         //public Action<ComponentMask, int, int2> UpdateRenderMatrix;
 
 

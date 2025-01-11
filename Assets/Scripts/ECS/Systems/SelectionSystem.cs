@@ -16,15 +16,19 @@ namespace Game.ECS.Systems
         public int SelectedBuildingID = -1;
 
         public Func<int, int2, int2, NativeArray<int2>> GetMoverPath;
-
+        public Action TryToConstruct;
         public void Init(SystemManager systemManager)
         {
             _world = systemManager.GetWorld();
         }
 
-        public void ProcessSelection(int selectedTileId)
+        public void ProcessSelection(int selectedTileId,GameState gameState)
         {
             Debug.Log("SelectedTile  " + selectedTileId);
+            if(gameState==GameState.Construction)
+            {
+                TryToConstruct.Invoke();
+            }
             int occupantEntityId = ((ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent]).GetComponent(selectedTileId).OccupantEntityID;
             int2 selectedTileCoordinate= ((ComponentContainer<CoordinateComponent>)_world.ComponentContainers[ComponentMask.CoordinateComponent]).GetComponent(selectedTileId).Coordinate;
             if (((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
@@ -33,7 +37,7 @@ namespace Game.ECS.Systems
                 {
                     SetSelectedMover(occupantEntityId);
                 }
-                else 
+                else
                 {
                    int closestFreeNeighbour= QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
                     SetMoverPath(closestFreeNeighbour);

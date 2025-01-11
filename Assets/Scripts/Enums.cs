@@ -39,3 +39,9 @@ public enum SoldierType:ushort
     Soldier2=2,
     Soldier3=3
 }
+
+public enum GameState:ushort
+{
+    MainState=1<<0,
+    Construction = 1 << 1,
+}

@@ -11,6 +11,9 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     Material[] materials;
 
     ECSWorld _world;
+
+    public ushort ActiveStateMask => (ushort)(GameState.Construction | GameState.MainState);
+
     public void Init(SystemManager systemManager)
     {
         _world = systemManager.GetWorld();

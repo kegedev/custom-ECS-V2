@@ -59,6 +59,12 @@ namespace Game.ECS.Systems
             world.AddComponentToEntity<SoldierComponent>(newEntityID,
                                                   ComponentMask.SoldierComponent,
                                                   _factoryManager.GetInstance<SoldierComponent>(new object[] { soldierType }));
+            world.AddComponentToEntity<HealthComponent>(newEntityID,
+                                                  ComponentMask.HealthComponent,
+                                                  _factoryManager.GetInstance<HealthComponent>(new object[] { MapConstants.SoldierHealth }));
+            world.AddComponentToEntity<DamageComponent>(newEntityID,
+                                                  ComponentMask.DamageComponent,
+                                                  _factoryManager.GetInstance<DamageComponent>(new object[] { MapConstants.SoldierDamages[soldierType] }));
             SetOccupant.Invoke(coordinateComponent, newEntityID);
         }
 

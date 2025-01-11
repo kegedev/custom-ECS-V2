@@ -51,6 +51,9 @@ namespace Game.ECS.Systems
             world.AddComponentToEntity<BuildingComponent>(newEntityID,
                                                           ComponentMask.BuildingComponent,
                                                           _factoryManager.GetInstance<BuildingComponent>(new object[] { buildingType }));
+            world.AddComponentToEntity<HealthComponent>(newEntityID,
+                                                  ComponentMask.HealthComponent,
+                                                  _factoryManager.GetInstance<HealthComponent>(new object[] { MapConstants.BuildingHealth[buildingType] }));
 
             //Placeholder creation for building
             for (int w = 0; w < 5; w++)

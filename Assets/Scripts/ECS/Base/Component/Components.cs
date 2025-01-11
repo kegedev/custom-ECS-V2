@@ -49,5 +49,15 @@ namespace Game.ECS.Base.Components
     {
         public ushort SoldierType;
     }
+
+    public struct HealthComponent
+    {
+        public int Health;
+    }
+
+    public struct DamageComponent
+    {
+        public int Damage;
+    }
 }
 

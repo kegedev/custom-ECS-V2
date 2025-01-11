@@ -77,7 +77,8 @@ public class UIManager : MonoBehaviour
             default:
                 break;
         }
-        _selectedUnitDamage.gameObject.SetActive(false);
+        _selectedUnitDamage.gameObject.SetActive(true);
+        _selectedUnitHealth.gameObject.SetActive(true);
         _selectedUnitDamage.text= damage.ToString();
         _selectedUnitHealth.text = health.ToString();
         _selectedUnitImage.material.SetTextureOffset("_MainTex", MapConstants.SoldierOffsets[soldierType]);

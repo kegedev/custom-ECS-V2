@@ -39,8 +39,12 @@ namespace Game.ECS.Systems
                 {
                     SetSelectedMover(occupantEntityId);
                     var soldierComponentContainer = (ComponentContainer<SoldierComponent>)_world.ComponentContainers[ComponentMask.SoldierComponent];
+                    var healthComponentContainer = (ComponentContainer<HealthComponent>)_world.ComponentContainers[ComponentMask.HealthComponent];
+                    var damageComponentContainer = (ComponentContainer<DamageComponent>)_world.ComponentContainers[ComponentMask.DamageComponent];
                     var soldierComponent = soldierComponentContainer.GetComponent(SelectedMoverID);
-                    SoldierSelected.Invoke((SoldierType)soldierComponent.SoldierType, 20,30);
+                    var healthComponent = healthComponentContainer.GetComponent(SelectedMoverID);
+                    var damageComponent = damageComponentContainer.GetComponent(SelectedMoverID);
+                    SoldierSelected.Invoke((SoldierType)soldierComponent.SoldierType, healthComponent.Health, damageComponent.Damage);
                 }
                 else
                 {
@@ -51,8 +55,10 @@ namespace Game.ECS.Systems
             {
                 SelectedBuildingID = occupantEntityId;
                 var buildingComponentContainer=(ComponentContainer<BuildingComponent>)_world.ComponentContainers[ComponentMask.BuildingComponent];
-                var buildingComponent= buildingComponentContainer.GetComponent(SelectedBuildingID); 
-                BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, 19);
+                var buildingComponent= buildingComponentContainer.GetComponent(SelectedBuildingID);
+                var healthComponentContainer = (ComponentContainer<HealthComponent>)_world.ComponentContainers[ComponentMask.HealthComponent];
+                var healthComponent = healthComponentContainer.GetComponent(SelectedBuildingID);
+                BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, healthComponent.Health);
                 Debug.Log("BUILDING SELECTED");
             }else if(SelectedMoverID != -1 && occupantEntityId != -1)
             {

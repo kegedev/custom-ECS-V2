@@ -61,6 +61,8 @@ namespace Game.Factory
             AddFactory(new BuildingComponentFactory());
             AddFactory(new SoldierComponentFactory());
             AddFactory(new CoordinateComponentFactory());
+            AddFactory(new HealthComponentFactory());
+            AddFactory(new DamageComponentFactory());
 
         }
     }

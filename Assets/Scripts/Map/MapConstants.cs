@@ -26,4 +26,21 @@ public static class MapConstants
         { SoldierType.Soldier2, new float2(0.5f, 0) },
         { SoldierType.Soldier3, new float2(0.75f, 0) },
     };
+
+    public static readonly int SoldierHealth = 10;
+
+    public static readonly Dictionary<SoldierType, int> SoldierDamages = new()
+    {
+        { SoldierType.None, -1 },
+        { SoldierType.Soldier1, 10 },
+        { SoldierType.Soldier2, 5 },
+        { SoldierType.Soldier3, 2 },
+    };
+
+    public static readonly Dictionary<BuildingType, int> BuildingHealth = new()
+    {
+        { BuildingType.None, -1 },
+        { BuildingType.Barrack, 100 },
+        { BuildingType.PowerPlant, 50 },
+    };
 }

@@ -11,6 +11,8 @@ public enum ComponentMask : ushort
     PlaceHolderComponent= 1 << 6,
     BuildingComponent=1<< 7,
     SoldierComponent = 1 << 8,
+    HealthComponent=1<<9,
+    DamageComponent=1<<10
     //RotationComponent = 1 << 1,
     //ScaleComponent = 1 << 2,
     //StaticRenderComponent = 1 << 4,

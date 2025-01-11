@@ -66,6 +66,16 @@ namespace Game.ECS.Systems
             ProcessSelection.Invoke(selectedTileId);
         }
 
+        public Vector2 GetInputPosition()
+        {
+            Vector3 worldPosition = _camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
+
+
+            Vector2 intersection = new Vector2(worldPosition.x + 0.5f, worldPosition.y + 0.5f);
+
+            return intersection;    
+        }
+
 
     }
 }

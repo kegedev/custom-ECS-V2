@@ -15,3 +15,27 @@ public enum ComponentMask : ushort
     //SoldierComponent = 1 << 6,
     //DynamicRenderComponent = 1 << 9,
 }
+
+public enum TerrainType : ushort
+{
+    None = 0,
+    LightGreen =1,
+    DarkGreen =2,
+
+}
+
+public enum BuildingType : ushort
+{
+    None=0,
+    Barrack=1,
+    PowerPlant=2,
+    PreviewRed=3,
+}
+
+public enum SoldierType:ushort
+{
+    None = 0,
+    Soldier1 =1,
+    Soldier2=2,
+    Soldier3=3
+}

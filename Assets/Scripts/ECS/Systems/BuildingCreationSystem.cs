@@ -73,6 +73,7 @@ namespace Game.ECS.Systems
                                                            new Vector2(pcAbsoluteX,pcAbsoluteY));
                             var renderComp= renderComponentContainer.GetComponent(tileId);
                             var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
+                            Debug.Log("offset B " + renderComp.TextureOffset);
                             renderComp.TextureOffset = new float2(0.5f,0.5f);
                             renderComponentContainer.UpdateComponent(tileId,renderComp);
                             SetOccupant.Invoke(coordinateComp, newEntityID);

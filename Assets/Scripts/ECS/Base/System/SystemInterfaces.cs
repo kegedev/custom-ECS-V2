@@ -11,6 +11,7 @@ namespace Game.ECS.Base.Systems
 
     public interface IUpdateSystem : ISystem
     {
+
         public void Update(SystemManager systemManager);
     }
 

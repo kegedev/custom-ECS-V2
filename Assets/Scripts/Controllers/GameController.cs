@@ -11,6 +11,7 @@ public class GameController: MonoBehaviour
     private ECSWorld _gameWorld;
     private ECSWorld _UIWorld;
     private SystemManager _systemManager;
+    [SerializeField] UIManager _uiManager;
     [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
@@ -55,6 +56,9 @@ public class GameController: MonoBehaviour
         MovementSystem movementSystem = new MovementSystem();
         movementSystem.SetTileOccupant += occupancySystem.SetTileOccupant;
 
+        ConstructSystem constructSystem = new ConstructSystem();
+        constructSystem.GetInputPos += inputSystem.GetInputPosition;
+
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
         _systemManager.AddSystem(new RenderSystem());
@@ -65,7 +69,7 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(aStarSystem);
         _systemManager.AddSystem(movementSystem);
         _systemManager.AddSystem(buildingCreationSystem);
-
+        _systemManager.AddSystem(constructSystem);
         _systemManager.InitSystems();
 
         Debug.Log(_gameWorld.ComponentContainers.Count);

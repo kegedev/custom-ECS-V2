@@ -55,7 +55,7 @@ namespace Game.ECS.Systems
 
                     eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
                                                                  ComponentMask.RenderComponent,
-                                                                  _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, new float2((((absoluteX + absoluteY) % 2 == 0) ? 0.25f : 0.5f), 0f) }));
+                                                                  _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, ((absoluteX + absoluteY) % 2 == 0) ? MapConstants.SoldierOffsets[SoldierType.Soldier1] : MapConstants.SoldierOffsets[SoldierType.Soldier2] }));
                     SetOccupant.Invoke(coordinateComponent, newEntityID);
                 }
             }

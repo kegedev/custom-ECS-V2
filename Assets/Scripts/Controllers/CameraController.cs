@@ -18,7 +18,7 @@ public class CameraController : MonoBehaviour
     public void Zoom(float scrollDelta)
     {
         _camera.orthographicSize -= scrollDelta * Time.deltaTime * 50f;
-        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, 1f, 20f);
+        _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, 1f, 100f);
     }
 
 

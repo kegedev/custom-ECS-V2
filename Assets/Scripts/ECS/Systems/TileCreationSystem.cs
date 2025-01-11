@@ -44,7 +44,7 @@ namespace Game.ECS.Systems
                             int absoluteX = x + xCN * chunkXSize;
                             int absoluteY = y + yCN * chunkYSize;
                             int2 coordinate = new int2(absoluteX, absoluteY);
-                            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0),Quaternion.identity,Vector3.one*0.95f);
+                            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0),Quaternion.identity,Vector3.one);
 
                             if (absoluteX >= MapSettings.MapWidth || absoluteY >= MapSettings.MapHeight)
                                 continue;

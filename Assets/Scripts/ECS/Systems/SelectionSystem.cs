@@ -5,6 +5,7 @@ using System;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 namespace Game.ECS.Systems
 {
@@ -25,14 +26,26 @@ namespace Game.ECS.Systems
         {
             Debug.Log("SelectedTile  " + selectedTileId);
             int occupantEntityId = ((ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent]).GetComponent(selectedTileId).OccupantEntityID;
-
+            int2 selectedTileCoordinate= ((ComponentContainer<CoordinateComponent>)_world.ComponentContainers[ComponentMask.CoordinateComponent]).GetComponent(selectedTileId).Coordinate;
             if (((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
             {
                 if (SelectedMoverID == -1)
                 {
                     SetSelectedMover(occupantEntityId);
                 }
-                else SetMoverPath(selectedTileId);
+                else 
+                {
+                   int closestFreeNeighbour= QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
+                    SetMoverPath(closestFreeNeighbour);
+                }
+            }else if(SelectedMoverID == -1 && occupantEntityId != -1)
+            {
+                Debug.Log("BUILDING SELECTED");
+            }else if(SelectedMoverID != -1 && occupantEntityId != -1)
+            {
+                Debug.Log("MOVE  TO BUILDING");
+                int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
+                SetMoverPath(closestFreeNeighbour);
             }
             else if(SelectedMoverID != -1)
             {
@@ -79,6 +92,7 @@ namespace Game.ECS.Systems
         {
             SelectedMoverID = -1;
         }
+
 
 
     }

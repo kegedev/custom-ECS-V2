@@ -161,8 +161,7 @@ namespace Game.ECS.Systems
             foreach (var direction in MapSettings.Directions)
             {
                 Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + direction.x, CurrentNode.Coordinate.y + direction.y);
-                if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
-                {
+              
                     if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                     {
                         int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
@@ -185,7 +184,7 @@ namespace Game.ECS.Systems
                     }
 
 
-                }
+                
             }
 
            

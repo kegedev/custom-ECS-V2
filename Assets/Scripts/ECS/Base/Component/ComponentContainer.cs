@@ -41,6 +41,18 @@ namespace Game.ECS.Base.Components
             throw new Exception("Entity ID not found in the container "+ entityId);
         }
 
+        public bool HasEntity(int entityId)
+        {
+            for (int i = 0; i < EntityCount; i++)
+            {
+                if (EntityIds[i] == entityId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void UpdateComponent(int entityId, T component) 
         {
             for (int i = 0; i < EntityCount; i++)
@@ -70,6 +82,7 @@ namespace Game.ECS.Base.Components
             {
                 if (EntityIds[i] == entityId)
                 {
+
                     EntityIds[i] = EntityIds[EntityCount - 1];
                     Components[i] = Components[EntityCount - 1];
                     EntityCount--;

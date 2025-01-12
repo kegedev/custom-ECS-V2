@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
-
+    FactoryManager factoryManager;
     private void Start()
     {
         InitializeGame();
@@ -31,7 +31,9 @@ public class GameController : MonoBehaviour
     private void InitializeGame()
     {
         MapSettings.Initialize(128, 128, 1, 8);
-        _gameWorld = new ECSWorld(256);
+        var poolManager = new PoolManager();
+         factoryManager = new FactoryManager(poolManager);
+        _gameWorld = new ECSWorld(256, factoryManager);
         _systemManager = new SystemManager(_gameWorld);
     }
 
@@ -43,8 +45,7 @@ public class GameController : MonoBehaviour
 
     private void SetupSystems()
     {
-        var poolManager = new PoolManager();
-        var factoryManager = new FactoryManager(poolManager);
+    
 
 
         var occupancySystem = new OccupancySystem();
@@ -115,5 +116,8 @@ public class GameController : MonoBehaviour
 
         // UIManager
         _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
+
+        //world
+        _gameWorld.DisposeBuilding += buildingCreationSystem.DisposeArea;
     }
 }

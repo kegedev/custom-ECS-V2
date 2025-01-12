@@ -27,10 +27,10 @@ namespace Game.Factory.Base
         }
 
 
-        //public void ReleasePoolable(Pool<T> pool, IComponent poolable)
-        //{
-        //    pool.PoolData.Push((T)poolable);
-        //}
+        public void ReleasePoolable(Pool<T> pool,T component)
+        {
+            pool.PoolData.Push(component);
+        }
     }
 
 }

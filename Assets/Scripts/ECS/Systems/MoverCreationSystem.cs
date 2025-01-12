@@ -52,5 +52,16 @@ namespace Game.ECS.Systems
            
             SetOccupant.Invoke(coordinateComponent, newEntityID);
         }
+
+        public void DisposeMover(int moverId)
+        {
+            if (world.GetComponentContainer<CoordinateComponent>().HasEntity(moverId)) world.GetComponentContainer<CoordinateComponent>().RemoveComponent(moverId);
+            if (world.GetComponentContainer<MoverComponent>().HasEntity(moverId))      world.GetComponentContainer<MoverComponent>().RemoveComponent(moverId);
+            if (world.GetComponentContainer<RenderComponent>().HasEntity(moverId))     world.GetComponentContainer<RenderComponent>().RemoveComponent(moverId);
+            if (world.GetComponentContainer<SoldierComponent>().HasEntity(moverId))    world.GetComponentContainer<SoldierComponent>().RemoveComponent(moverId);
+            if (world.GetComponentContainer<HealthComponent>().HasEntity(moverId))     world.GetComponentContainer<HealthComponent>().RemoveComponent(moverId);
+            if (world.GetComponentContainer<AttackComponent>().HasEntity(moverId))     world.GetComponentContainer<AttackComponent>().RemoveComponent(moverId);
+
+        }
     }
 }

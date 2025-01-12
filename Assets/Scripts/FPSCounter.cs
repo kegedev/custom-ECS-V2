@@ -4,6 +4,12 @@ public class FPSCounter : MonoBehaviour
 {
     private float deltaTime = 0.0f;
 
+    private void Start()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 500;
+    }
+
     private void Update()
     {
         deltaTime += (Time.deltaTime - deltaTime) * 0.1f;

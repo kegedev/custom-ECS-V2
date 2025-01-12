@@ -33,18 +33,18 @@ namespace Game.Factory
 
         }
 
-        //internal void ReleaseInstance<T>(T instance)
-        //{
-        //    if (factories.TryGetValue(typeof(T), out var factory) && instance is IComponent poolable)
-        //    {
-        //        ((BaseFactory<T>)factory).ReleasePoolable(_poolManager.GetPool<T>(), poolable);
-        //    }
-        //    else
-        //    {
+        internal void ReleaseInstance<T>(T instance)
+        {
+            if (factories.TryGetValue(typeof(T), out var factory))
+            {
+                ((BaseFactory<T>)factory).ReleasePoolable(_poolManager.GetPool<T>(), instance);
+            }
+            else
+            {
 
-        //        throw new Exception("No Factory Assigned");
-        //    }
-        //}
+                throw new Exception("No Factory Assigned");
+            }
+        }
 
         public void AddFactory<T>(BaseFactory<T> factory) where T : new()
         {

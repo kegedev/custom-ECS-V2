@@ -68,5 +68,37 @@ namespace Game.ECS.Systems
                 }
             }
         }
+
+      
+
+    public void DisposeArea(int entityId)
+    {
+        var rootTileCoord = world.GetComponent<CoordinateComponent>(entityId);
+
+        var areaComponent = world.GetComponent<AreaComponent>(entityId);
+        for (int w = 0; w < areaComponent.Width; w++)
+        {
+            for (int h = 0; h < areaComponent.Height; h++)
+            {
+                int pcAbsoluteX = rootTileCoord.Coordinate.x + w;
+                int pcAbsoluteY = rootTileCoord.Coordinate.y + h;
+
+                if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
+                    continue;
+                int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                     world.QuadTreeData,
+                                                     new Vector2(pcAbsoluteX, pcAbsoluteY));
+
+                var renderComp = world.GetComponent<RenderComponent>(tileId);
+                var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+
+
+                renderComp.TextureOffset = ((pcAbsoluteX + pcAbsoluteY) % 2 == 0) ? MapConstants.TerrainOffsets[TerrainType.LightGreen] : MapConstants.TerrainOffsets[TerrainType.DarkGreen];
+                    world.UpdateComponent(tileId, renderComp);
+                SetOccupant.Invoke(coordinateComp, -1);
+            }
+        }
     }
+    }
+
 }

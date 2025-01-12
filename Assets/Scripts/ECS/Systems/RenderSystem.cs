@@ -24,10 +24,10 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     public void Update(SystemManager systemManager)
     {
 
-        RenderEntities(((ComponentContainer<RenderComponent>)_world.ComponentContainers[typeof(RenderComponent)]).Components);
+        RenderEntities(_world.GetComponentContainer<RenderComponent>());
     }
 
-    private void RenderEntities(NativeArray<RenderComponent> renderComponents)//rendercomponent containerla gir buraya
+    private void RenderEntities(ComponentContainer<RenderComponent> renderComponentContainer)//rendercomponent containerla gir buraya
     {
         const int batchSize = 1024;
         Matrix4x4[] batch = new Matrix4x4[batchSize];
@@ -35,11 +35,11 @@ public class RenderSystem : IInitSystem, IUpdateSystem
         int batchCount = 0;
         MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
 
-        for (int i = 0; i < renderComponents.Length; i++)
+        for (int i = 0; i < renderComponentContainer.EntityCount; i++)
         {
-            batch[batchCount] = renderComponents[i].TRS;
+            batch[batchCount] = renderComponentContainer.Components[i].TRS;
            
-            offsets[batchCount++] = new Vector4(0.25f, 0.5f,renderComponents[i].TextureOffset.x, renderComponents[i].TextureOffset.y);
+            offsets[batchCount++] = new Vector4(0.25f, 0.5f, renderComponentContainer.Components[i].TextureOffset.x, renderComponentContainer.Components[i].TextureOffset.y);
            
             if (batchCount == batchSize)
             {

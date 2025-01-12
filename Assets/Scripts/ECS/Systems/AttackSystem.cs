@@ -21,7 +21,17 @@ public class AttackSystem : IUpdateSystem
                 var targetHealthComponent = world.GetComponent<HealthComponent>(attackComponent.TargetId);
                 
                 targetHealthComponent.Health -= attackComponent.Damage;
+                if(targetHealthComponent.Health<=0)
+                {
+                    Debug.Log("DISPOSE");
+                    world.DisposeEntity(attackComponent.TargetId);
+                }
+                else
+                {
+
                 world.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
+                }
+                
           
                 attackComponent.TargetId = -1;
                 world.UpdateComponent(attackComponentContainer.EntityIds[i], attackComponent);

@@ -1,7 +1,9 @@
-using Game.ECS.Base;
+﻿using Game.ECS.Base;
 using Game.ECS.Base.Components;
 using Game.ECS.Base.Systems;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -10,9 +12,10 @@ namespace Game.ECS.Systems
 {
     public class AStarSystem
     {
+
         ECSWorld _world;
 
-        int maxSteps = 2000;
+        int maxSteps = 3000;
 
         public AStarSystem(ECSWorld world)
         {
@@ -21,6 +24,8 @@ namespace Game.ECS.Systems
 
         public NativeArray<int2> GetMoverPath(int moverIndex, int2 startcoord, int2 tagretCoordinate)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             AStarNode startNode = new AStarNode()
             {
                 MoverIndex = moverIndex,
@@ -35,7 +40,7 @@ namespace Game.ECS.Systems
 
             if (aStarNodes == null)
             {
-                Debug.Log("astarNodes null");
+                  UnityEngine.Debug.Log("astarNodes null");
                 return new NativeArray<int2>(0, Allocator.Persistent);
             }
             NativeArray<int2> path = new NativeArray<int2>(aStarNodes.Count, Allocator.Persistent);
@@ -43,6 +48,9 @@ namespace Game.ECS.Systems
             {
                 path[i] = aStarNodes[i].Coordinate;
             }
+            stopwatch.Stop();
+            UnityEngine.Debug.Log($"GetMoverPath took {stopwatch.ElapsedMilliseconds} ms");
+
             return path;
         }
 
@@ -66,7 +74,7 @@ namespace Game.ECS.Systems
                 if (stepCount++ > maxSteps)
                 {
                     stepCount = 0;
-                    Debug.LogError("Pathfinding aborted: Exceeded maximum steps.");
+                    UnityEngine.Debug.LogError("Pathfinding aborted: Exceeded maximum steps.");
                     return null;
                 }
 
@@ -89,7 +97,7 @@ namespace Game.ECS.Systems
                         break;
                     }
                 }
-
+                
                 closedList.Add(currentTile);
 
                 if (currentTile.Coordinate.x == goalTile.Coordinate.x && currentTile.Coordinate.y == goalTile.Coordinate.y)
@@ -126,6 +134,7 @@ namespace Game.ECS.Systems
 
                         if (!ListContainsNode(openList, neighbors[i]))
                         {
+                       
                             openList.Add(neighbors[i]);
                         }
                     }
@@ -148,42 +157,45 @@ namespace Game.ECS.Systems
             path.Reverse();
             return path;
         }
+                
 
-        private List<AStarNode> GetNeighbors(AStarNode CurrentNode)
+        private List<AStarNode> GetNeighbors(AStarNode currentNode)
         {
             List<AStarNode> neighbors = new List<AStarNode>();
 
             foreach (var direction in MapSettings.Directions)
             {
-                Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + direction.x, CurrentNode.Coordinate.y + direction.y);
+                Vector2 checkCoordinate = new Vector2(currentNode.Coordinate.x + direction.x, currentNode.Coordinate.y + direction.y);
 
-                if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
+                // Harita sınırlarını kontrol et
+                if (checkCoordinate.x < 0 || checkCoordinate.x >= MapSettings.MapWidth || checkCoordinate.y < 0 || checkCoordinate.y >= MapSettings.MapHeight)
+                    continue;
+
+                // Tile ID'sini al
+                int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                     _world.QuadTreeData,
+                                                     checkCoordinate);
+
+                // Geçersiz veya bulunamayan tile'ları atla
+                if (tileId == -1) continue;
+
+                var coordinateComp = _world.GetComponent<CoordinateComponent>(tileId);
+                var tileComp = _world.GetComponent<TileComponent>(tileId);
+
+                // Eğer tile geçilemezse (engelse) atla
+                if (tileComp.OccupantEntityID!=-1) continue;
+
+                // Komşuyu ekle
+                neighbors.Add(new AStarNode()
                 {
-                    int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                       _world.QuadTreeData,
-                                                       checkCoordinate);
-
-                    var coordinateComp = _world.GetComponent<CoordinateComponent>(tileId);
-                    var tileComp = _world.GetComponent<TileComponent>(tileId);
-
-                    neighbors.Add(new AStarNode()
-                    {
-                        MoverIndex = tileComp.OccupantEntityID,
-                        Coordinate = coordinateComp.Coordinate
-                    });
-
-
-
-                }
-
-
-
+                    MoverIndex = tileComp.OccupantEntityID,
+                    Coordinate = coordinateComp.Coordinate
+                });
             }
-
-
 
             return neighbors;
         }
+
         //[BurstCompile]
         //private struct GetNeighboursJob : IJobParallelFor
         //{
@@ -250,6 +262,8 @@ namespace Game.ECS.Systems
             for (int i = 0; i < list.Length; i++)
             {
                 if (list[i].NodeID == node.NodeID)
+                    return true;
+                if (list[i].Coordinate.x == node.Coordinate.x && list[i].Coordinate.y == node.Coordinate.y)
                     return true;
             }
             return false;

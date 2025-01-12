@@ -3,9 +3,8 @@ using Game.Factory;
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.LightTransport;
+
 
 namespace Game.ECS.Base
 {
@@ -13,8 +12,8 @@ namespace Game.ECS.Base
     {
         public int EntityIdCounter;
         public int EntityCount;
-        public NativeArray<int> Entities; //tüm entitylerin IDleri
-        public Dictionary<Type, object> ComponentContainers; //<componentMask,ComponentContainer>
+        public NativeArray<int> Entities;
+        public Dictionary<Type, object> ComponentContainers; 
 
         public Action<int> DisposeArea;
         public Action<CoordinateComponent, int> SetOccupant;

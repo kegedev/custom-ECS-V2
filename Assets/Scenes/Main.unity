@@ -2878,6 +2878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 789b1ef74eccdc64889a6cef1f07d4d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugSphere: {fileID: 4084469678710027757, guid: 5d853fc5230544c45b1fe2e133b02d31, type: 3}
   _uiManager: {fileID: 909654732}
   _camera: {fileID: 519420031}
   _mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}

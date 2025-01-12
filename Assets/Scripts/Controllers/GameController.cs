@@ -5,6 +5,7 @@ using Game.Factory;
 using Game.Pool;
 using Game.ECS.Systems;
 using Game.ECS.Base.Components;
+using Unity.Mathematics;
 
 public class GameController : MonoBehaviour
 {
@@ -127,5 +128,7 @@ public class GameController : MonoBehaviour
         //world
         _gameWorld.DisposeArea += buildingCreationSystem.DisposeArea;
         _gameWorld.SetOccupant += occupancySystem.SetTileOccupant;
+
+
     }
 }

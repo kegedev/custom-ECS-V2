@@ -3,7 +3,6 @@ using Game.ECS.Base.Components;
 using System;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 public class AreaSystem : MonoBehaviour
 {

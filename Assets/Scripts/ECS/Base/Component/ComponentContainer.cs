@@ -9,11 +9,11 @@ namespace Game.ECS.Base.Components
 {
     public class ComponentContainer<T> where T : struct
     {
-        public NativeArray<int> EntityIds;//bu componente sahip entityIDleri
-        public NativeArray<T> Components; //EntityId indexine uyumlu Componentler
-        public int EntityCount; //aktifEntityComponentsayısı
+        public NativeArray<int> EntityIds;
+        public NativeArray<T> Components; 
+        public int EntityCount; 
 
-            public ComponentContainer(int initialCapacity = 128)
+        public ComponentContainer(int initialCapacity = 128)
         {
             EntityIds = new NativeArray<int>(initialCapacity, Allocator.Persistent);
             Components = new NativeArray<T>(initialCapacity, Allocator.Persistent);
@@ -32,8 +32,6 @@ namespace Game.ECS.Base.Components
             EntityCount++;
         }
 
-
-    
         public unsafe ref T GetComponent(int entityId)
         {
             for (int i = 0; i < EntityCount; i++)
@@ -41,15 +39,11 @@ namespace Game.ECS.Base.Components
                 if (EntityIds[i] == entityId)
                 {
                     return ref UnsafeUtility.ArrayElementAsRef<T>(Components.GetUnsafePtr(), i);
-            
                 }
             }
-
             throw new Exception("Entity ID not found in the container " + entityId);
         }
       
-
-
         public bool HasComponent(int entityId)
         {
             for (int i = 0; i < EntityCount; i++)

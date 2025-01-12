@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 namespace Game.ECS.Systems
 {

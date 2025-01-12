@@ -32,7 +32,7 @@ namespace Game.ECS.Base
             ComponentContainers= new Dictionary<Type, object>();
         }
 
-        public void AddComponentToEntity<T>(int entityId, ComponentMask componentMask, object component) where T : struct
+        public void AddComponentToEntity<T>(int entityId, object component) where T : struct
         {
             if (component == null)
                 throw new Exception("Component cannot be null.");
@@ -45,7 +45,7 @@ namespace Game.ECS.Base
 
             ((ComponentContainer<T>)componentContainer).AddComponent(entityId, (T)component);
         }
-        public T GetComponentOfEntity<T>(int entityId, ComponentMask componentMask) where T : struct
+        public T GetComponentOfEntity<T>(int entityId) where T : struct
         {
             if (!ComponentContainers.TryGetValue(typeof(T), out var componentContainer))
             {

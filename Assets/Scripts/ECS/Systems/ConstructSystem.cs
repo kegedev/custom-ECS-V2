@@ -60,10 +60,8 @@ namespace Game.ECS.Systems
 
         public void TryToConstruct()
         {
-            Debug.Log("TryToConstruct");
             if(isAreF)
             {
-                Debug.Log("TryToConstruct2 ");
                 SetGameState.Invoke(GameState.MainState);
                 if (currentTileId != -1) ClearPreview(world);
                 _previousOffsets.Clear();
@@ -77,11 +75,7 @@ namespace Game.ECS.Systems
         {
             bool isAreafree = true;
 
-            //var renderComponentContainer = world.GetComponentContainer<RenderComponent>();
-            //var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>();
-            //var tileComponentContainer = world.GetComponentContainer<TileComponent>();
             int2 coordinate = world.GetComponent<CoordinateComponent>(currentTileId).Coordinate;
-            //int2 coordinate = coordinateComponentContainer.GetComponent(currentTileId).Coordinate;
             for (int w = 0; w < 5; w++)
             {
                 for (int h = 0; h < 5; h++)
@@ -101,33 +95,24 @@ namespace Game.ECS.Systems
                     var renderComp = world.GetComponent<RenderComponent>(tileId);
                     var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
                     var tileComp = world.GetComponent<TileComponent>(tileId);
-                    //var renderComp = renderComponentContainer.GetComponent(tileId);
-                    //var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
-                    //var tileComp = tileComponentContainer.GetComponent(tileId);
                     _previewTileIds.Add(tileId);
                     _previousOffsets.Add( renderComp.TextureOffset);
                     if (tileComp.OccupantEntityID!=-1) isAreafree = false;
                     renderComp.TextureOffset = new float2(0.5f, 0.5f);
                     world.UpdateComponent(tileId, renderComp);
-  
                 }
             }
-
             return isAreafree;
         }
 
         private void ShowPreview(ECSWorld world, bool isAreaFree)
         {
-            
             foreach (var previewTileId in _previewTileIds)
             {
              var renderComp=world.GetComponent<RenderComponent>(previewTileId);
-                
                 renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree? _buildingType : BuildingType.PreviewRed];
                 world.UpdateComponent(previewTileId, renderComp);
-              
             }
-    
         }
         private void ClearPreview(ECSWorld world)
         {
@@ -141,13 +126,10 @@ namespace Game.ECS.Systems
             _previousOffsets.Clear();
             _previewTileIds.Clear();
         }
-
         public void BuildingSelectedToConstruct(BuildingType buildingType)
         {
             _buildingType=buildingType;
             SetGameState.Invoke(GameState.Construction);
         }
-    
-    
     }
 }

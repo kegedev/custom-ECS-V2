@@ -26,7 +26,7 @@ namespace Game.ECS.Systems
 
         public void ProcessSelection(int selectedTileId,GameState gameState)
         {
-            Debug.Log("SelectedTile  " + selectedTileId);
+            //Debug.Log("SelectedTile  " + selectedTileId);
             if(gameState==GameState.Construction)
             {
                 TryToConstruct.Invoke();
@@ -64,10 +64,10 @@ namespace Game.ECS.Systems
                 var healthComponent = _world.GetComponent<HealthComponent>(SelectedBuildingID);
 
                 BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, healthComponent.Health);
-                Debug.Log("BUILDING SELECTED");
+               // Debug.Log("BUILDING SELECTED");
             }else if(SelectedMoverID != -1 && occupantEntityId != -1)
             {
-                Debug.Log("MOVE  TO BUILDING");
+                //Debug.Log("MOVE  TO BUILDING");
                 var attackComponent = _world.GetComponent<AttackComponent>(SelectedMoverID);
                 var tileComponent = _world.GetComponent<TileComponent>(selectedTileId);
 
@@ -80,7 +80,7 @@ namespace Game.ECS.Systems
             }
             else if(SelectedMoverID != -1)
             {
-                Debug.Log("Tile has no occupant");
+               // Debug.Log("Tile has no occupant");
                 SetMoverPath(selectedTileId);
             }
    

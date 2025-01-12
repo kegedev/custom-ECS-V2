@@ -47,25 +47,18 @@ namespace Game.ECS.Systems
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(spawnCoordinateComponent.Coordinate);
 
             world.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                               ComponentMask.CoordinateComponent,
-                                                               coordinateComponent);
-
+                                                            coordinateComponent);
             world.AddComponentToEntity<MoverComponent>(newEntityID,
-                                                          ComponentMask.MoverComponent,
-                                                          _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
-
+                                                       _factoryManager.GetInstance<MoverComponent>(new object[] { false, 0, new NativeArray<int2>() }));
             world.AddComponentToEntity<RenderComponent>(newEntityID,
-                                                         ComponentMask.RenderComponent,
-                                                          _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, MapConstants.SoldierOffsets[soldierType] }));
+                                                        _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, MapConstants.SoldierOffsets[soldierType] }));
             world.AddComponentToEntity<SoldierComponent>(newEntityID,
-                                                  ComponentMask.SoldierComponent,
-                                                  _factoryManager.GetInstance<SoldierComponent>(new object[] { soldierType }));
+                                                         _factoryManager.GetInstance<SoldierComponent>(new object[] { soldierType }));
             world.AddComponentToEntity<HealthComponent>(newEntityID,
-                                                  ComponentMask.HealthComponent,
-                                                  _factoryManager.GetInstance<HealthComponent>(new object[] { MapConstants.SoldierHealth }));
+                                                        _factoryManager.GetInstance<HealthComponent>(new object[] { MapConstants.SoldierHealth }));
             world.AddComponentToEntity<AttackComponent>(newEntityID,
-                                                  ComponentMask.AttackComponent,
-                                                  _factoryManager.GetInstance<AttackComponent>(new object[] { MapConstants.SoldierDamages[soldierType] ,-1}));
+                                                        _factoryManager.GetInstance<AttackComponent>(new object[] { MapConstants.SoldierDamages[soldierType] ,-1}));
+           
             SetOccupant.Invoke(coordinateComponent, newEntityID);
         }
 

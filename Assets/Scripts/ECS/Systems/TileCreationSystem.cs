@@ -52,24 +52,14 @@ namespace Game.ECS.Systems
                             int newEntityID=eCSWorld.CreateNewEntity();
 
                             eCSWorld.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                                               ComponentMask.CoordinateComponent,
                                                                                _factoryManager.GetInstance<CoordinateComponent>(coordinate));
-
                             eCSWorld.AddComponentToEntity<TileComponent>(newEntityID,
-                                                                         ComponentMask.TileComponent,
-                                                                          _factoryManager.GetInstance<TileComponent>( -1 ));
-
+                                                                         _factoryManager.GetInstance<TileComponent>( -1 ));
                             eCSWorld.AddComponentToEntity<RenderComponent>(newEntityID,
-                                                                         ComponentMask.RenderComponent,
                                                                           _factoryManager.GetInstance<RenderComponent>(new object[2] { matrix, ((absoluteX + absoluteY) % 2 == 0) ? MapConstants.TerrainOffsets[TerrainType.LightGreen] : MapConstants.TerrainOffsets[TerrainType.DarkGreen]}));
                             eCSWorld.AddComponentToEntity<QuadTreeLeafComponent>(newEntityID,
-                                                                                 ComponentMask.QuadTreeLeafComponent,
-                                                                                 _factoryManager.GetInstance<QuadTreeLeafComponent>(newEntityID,new Rect((float)coordinate.x-0.5f,
-                                                                                                                                                         (float)coordinate.y - 0.5f, 1,1)));
-
-
-
-
+                                                                                 _factoryManager.GetInstance<QuadTreeLeafComponent>(newEntityID,new Rect(coordinate.x-0.5f,
+                                                                                                                                                         coordinate.y - 0.5f, 1,1)));
                         }
                     }
                 }

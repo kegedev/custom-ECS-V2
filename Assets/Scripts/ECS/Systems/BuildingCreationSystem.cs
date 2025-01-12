@@ -39,17 +39,12 @@ namespace Game.ECS.Systems
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(rootTileCoord.Coordinate);
 
             world.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                            ComponentMask.CoordinateComponent,
                                                             coordinateComponent);
-
             world.AddComponentToEntity<AreaComponent>(newEntityID,
-                                                          ComponentMask.AreaComponent,
                                                           _factoryManager.GetInstance<AreaComponent>(new object[] { 5, 5 }));
             world.AddComponentToEntity<BuildingComponent>(newEntityID,
-                                                          ComponentMask.BuildingComponent,
                                                           _factoryManager.GetInstance<BuildingComponent>(new object[] { buildingType }));
             world.AddComponentToEntity<HealthComponent>(newEntityID,
-                                                  ComponentMask.HealthComponent,
                                                   _factoryManager.GetInstance<HealthComponent>(new object[] { MapConstants.BuildingHealth[buildingType] }));
 
             //Placeholder creation for building

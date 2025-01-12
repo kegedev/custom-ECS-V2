@@ -5,14 +5,15 @@ using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 namespace Game.ECS.Systems
 {
-    public class ConstructSystem : IInitSystem, IUpdateSystem
+    public class ConstructSystem: IUpdateSystem
     {
-        ECSWorld world;
+        private ECSWorld _world;
         public Func<Vector2> GetInputPos;
-        int currentTileId = -1;
+        private int currentTileId = -1;
         private List<int> _previewTileIds;
         private List<float2> _previousOffsets;
         private BuildingType _buildingType = BuildingType.None;
@@ -20,15 +21,15 @@ namespace Game.ECS.Systems
         public Action<GameState> SetGameState;
         public Action<BuildingType, int> ConstructBuilding;
         public ushort ActiveStateMask => (ushort)GameState.Construction;
-        bool isAreF = false;
-        public void Init(SystemManager systemManager)
+        private bool isAreF = false;
+
+        public ConstructSystem(ECSWorld world)
         {
-            world = systemManager.GetWorld();
+            _world = world;
             _previewTileIds = new List<int>();
             _previousOffsets = new List<float2>();
-
         }
-
+     
         public void Update(SystemManager systemManager)
         {
 
@@ -55,7 +56,7 @@ namespace Game.ECS.Systems
             if (isAreF)
             {
                 SetGameState.Invoke(GameState.MainState);
-                if (currentTileId != -1) ClearPreview(world);
+                if (currentTileId != -1) ClearPreview(_world);
                 _previousOffsets.Clear();
                 _previewTileIds.Clear();
                 ConstructBuilding.Invoke(_buildingType, currentTileId);

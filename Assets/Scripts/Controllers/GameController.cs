@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
-    FactoryManager factoryManager;
+    private FactoryManager _factoryManager;
     private void Start()
     {
         InitializeGame();
@@ -30,10 +30,10 @@ public class GameController : MonoBehaviour
 
     private void InitializeGame()
     {
-        MapSettings.Initialize(128, 128, 1, 8);
+        MapSettings.Initialize(128, 128, 1,8);
         var poolManager = new PoolManager();
-        factoryManager = new FactoryManager(poolManager);
-        _gameWorld = new ECSWorld(256,factoryManager);
+        _factoryManager = new FactoryManager(poolManager);
+        _gameWorld = new ECSWorld(256,_factoryManager);
         _systemManager = new SystemManager(_gameWorld);
     }
 
@@ -48,29 +48,31 @@ public class GameController : MonoBehaviour
   
 
 
-        var occupancySystem = new OccupancySystem();
-        var moverCreationSystem = new MoverCreationSystem(factoryManager);
-        var buildingCreationSystem = new BuildingCreationSystem(factoryManager);
-        var inputSystem = new InputSystem(_camera);
-        var selectionSystem = new SelectionSystem();
-        var aStarSystem = new AStarSystem();
+        var occupancySystem = new OccupancySystem(_gameWorld);
+        var moverCreationSystem = new MoverCreationSystem(_gameWorld, _factoryManager);
+        var buildingCreationSystem = new BuildingCreationSystem(_gameWorld,_factoryManager);
+        var inputSystem = new InputSystem(_gameWorld,_camera);
+        var selectionSystem = new SelectionSystem(_gameWorld);
+        var aStarSystem = new AStarSystem(_gameWorld);
         var movementSystem = new MovementSystem();
-        var constructSystem = new ConstructSystem();
+        var constructSystem = new ConstructSystem(_gameWorld);
+        var areaSystem=new AreaSystem(_gameWorld);
 
+        ConfigureSystemEventHandlers(occupancySystem, 
+                                     moverCreationSystem, 
+                                     buildingCreationSystem, 
+                                     inputSystem, 
+                                     selectionSystem, 
+                                     aStarSystem, 
+                                     movementSystem, 
+                                     constructSystem,
+                                     areaSystem);
 
-        ConfigureSystemEventHandlers(occupancySystem, moverCreationSystem, buildingCreationSystem, inputSystem, selectionSystem, aStarSystem, movementSystem, constructSystem);
-
-
-        _systemManager.AddSystem(occupancySystem);
-        _systemManager.AddSystem(new TileCreationSystem(factoryManager));
+        _systemManager.AddSystem(new TileCreationSystem(_factoryManager));
         _systemManager.AddSystem(new RenderSystem());
         _systemManager.AddSystem(inputSystem);
-        _systemManager.AddSystem(new QuadtreeCreationSystem(factoryManager));
-        _systemManager.AddSystem(selectionSystem);
-        _systemManager.AddSystem(moverCreationSystem);
-        _systemManager.AddSystem(aStarSystem);
+        _systemManager.AddSystem(new QuadtreeCreationSystem(_factoryManager));
         _systemManager.AddSystem(movementSystem);
-        _systemManager.AddSystem(buildingCreationSystem);
         _systemManager.AddSystem(constructSystem);
         _systemManager.AddSystem(new AttackSystem());
 
@@ -85,7 +87,8 @@ public class GameController : MonoBehaviour
         SelectionSystem selectionSystem,
         AStarSystem aStarSystem,
         MovementSystem movementSystem,
-        ConstructSystem constructSystem)
+        ConstructSystem constructSystem,
+        AreaSystem areaSystem)
     {
         // MoverCreationSystem
         moverCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
@@ -93,8 +96,8 @@ public class GameController : MonoBehaviour
         moverCreationSystem.GetSelectedBuildingId += selectionSystem.GetSelectedBuildingId;
 
         // BuildingCreationSystem
-        buildingCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
-        buildingCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+        buildingCreationSystem.CreateArea += areaSystem.CreateArea;
+        buildingCreationSystem.DisposeArea += areaSystem.DisposeArea;
 
         // InputSystem
         inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
@@ -114,10 +117,15 @@ public class GameController : MonoBehaviour
         constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
         _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
 
+        //AreaSystem
+        areaSystem.SetOccupant += occupancySystem.SetTileOccupant;
+        areaSystem.GetOccupant += occupancySystem.GetTileOccupant;
+
         // UIManager
         _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
 
         //world
-        _gameWorld.DisposeBuilding += buildingCreationSystem.DisposeArea;
+        _gameWorld.DisposeArea += buildingCreationSystem.DisposeArea;
+        _gameWorld.SetOccupant += occupancySystem.SetTileOccupant;
     }
 }

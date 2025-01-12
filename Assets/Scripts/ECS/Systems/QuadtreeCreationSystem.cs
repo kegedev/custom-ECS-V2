@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using System.Data;
 
 public class QuadtreeCreationSystem : IInitSystem
 {
@@ -16,9 +17,8 @@ public class QuadtreeCreationSystem : IInitSystem
     public void Init(SystemManager systemManager)
     {
         _world = systemManager.GetWorld();
-        //_world.TileQuadtreeRoot = CreateQuadtreeChunkFromChunks(_world, _world.GetChunksByMask(ComponentMask.CoordinateComponent | ComponentMask.TileComponent));
-
-        _world.QuadTreeData.TileQuadtreeRoot = CreateQuadTree(_world.GetComponentContainer<QuadTreeLeafComponent>().Components, 128, 128, 1);
+     
+        _world.QuadTreeData.TileQuadtreeRoot = CreateQuadTree(_world.GetComponentContainer<QuadTreeLeafComponent>().Components, MapSettings.MapWidth, MapSettings.MapHeight, MapSettings.TileEdgeSize);
 
     }
 

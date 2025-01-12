@@ -8,15 +8,15 @@ using UnityEngine;
 
 namespace Game.ECS.Systems
 {
-    public class AStarSystem : IInitSystem
+    public class AStarSystem
     {
         ECSWorld _world;
 
         int maxSteps = 2000;
 
-        public void Init(SystemManager systemManager)
+        public AStarSystem(ECSWorld world)
         {
-            _world = systemManager.GetWorld();
+            _world=world;
         }
 
         public NativeArray<int2> GetMoverPath(int moverIndex, int2 startcoord, int2 tagretCoordinate)

@@ -20,9 +20,7 @@ namespace Game.ECS.Systems
         }
         public void Init(SystemManager systemManager)
         {
-            ECSWorld eCSWorld = systemManager.GetWorld();
-
-            CreateTiles(eCSWorld);
+            CreateTiles(systemManager.GetWorld());
         }
 
         public void CreateTiles(ECSWorld eCSWorld)

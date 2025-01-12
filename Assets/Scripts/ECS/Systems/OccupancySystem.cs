@@ -6,30 +6,23 @@ using System;
 
 namespace Game.ECS.Systems
 {
-    public class OccupancySystem : IInitSystem
+    public class OccupancySystem
     {
 
         private ECSWorld _world;
-
-        public void Init(SystemManager systemManager)
+        public OccupancySystem(ECSWorld world) 
         {
-            _world = systemManager.GetWorld();
+                _world = world;
         }
 
         public void SetTileOccupant(CoordinateComponent coordinateComponent, int occupantEntityId)
         {
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                       _world.QuadTreeData,
-                                       pos);
+            int tileEntityId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),_world.QuadTreeData,pos);
 
-            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];
-            TileComponent tileComponent = componentContainer.GetComponent(tileEntityId);
+            ref var tileComponent=ref _world.GetComponent<TileComponent>(tileEntityId);
             tileComponent.OccupantEntityID = occupantEntityId;
-            componentContainer.Components[tileEntityId] = tileComponent;
-            _world.ComponentContainers[typeof(TileComponent)] = componentContainer;
-
 
         }
 
@@ -37,12 +30,9 @@ namespace Game.ECS.Systems
         {
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                       _world.QuadTreeData,
-                                       pos);
+            int tileEntityId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),_world.QuadTreeData,pos);
 
-            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];
-            TileComponent tileComponent = componentContainer.GetComponent(tileEntityId);
+            ref var tileComponent = ref _world.GetComponent<TileComponent>(tileEntityId);
             return tileComponent.OccupantEntityID;
 
         }

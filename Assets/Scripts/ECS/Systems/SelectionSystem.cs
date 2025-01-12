@@ -7,7 +7,7 @@ using Unity.Mathematics;
 
 namespace Game.ECS.Systems
 {
-    public class SelectionSystem : IInitSystem
+    public class SelectionSystem
     {
         public ECSWorld _world;
         public int SelectedMoverID = -1;
@@ -17,9 +17,10 @@ namespace Game.ECS.Systems
         public Action TryToConstruct;
         public Action<SoldierType, int, int> SoldierSelected;
         public Action<BuildingType, int> BuildingSelected;
-        public void Init(SystemManager systemManager)
+        
+        public SelectionSystem(ECSWorld world)
         {
-            _world = systemManager.GetWorld();
+            _world = world;
         }
 
         public void ProcessSelection(int selectedTileId, GameState gameState)

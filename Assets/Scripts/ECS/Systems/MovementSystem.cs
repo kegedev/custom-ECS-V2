@@ -14,45 +14,36 @@ namespace Game.ECS.Systems
         private float movementTimer = 0f;
         private const float movementInterval = 0.05f;
         public Action<CoordinateComponent, int> SetTileOccupant;
-
         public ushort ActiveStateMask => (ushort)GameState.MainState;
-
-        //public Action<ComponentMask, int, int2> UpdateRenderMatrix;
-
 
         public void Update(SystemManager systemManager)
         {
-            if (!systemManager.GetWorld().ComponentContainers.ContainsKey(typeof(MoverComponent))) return;
+            if (!systemManager.GetWorld().HasComponentContainer<MoverComponent>()) return;
             movementTimer += Time.deltaTime;
             if (movementTimer >= movementInterval)
             {
                 movementTimer -= movementInterval;
 
-                var moverComponentContainer = systemManager.GetWorld().GetComponentContainer<MoverComponent>();
-                var coordinateComponentContainer = systemManager.GetWorld().GetComponentContainer<CoordinateComponent>();
-                var renderComponentContainer = systemManager.GetWorld().GetComponentContainer<RenderComponent>();
-                
-                MoveEntities(moverComponentContainer, coordinateComponentContainer,renderComponentContainer);
-               // systemManager.GetWorld().ChunkContainers[(ushort)(ComponentMask.CoordinateComponent | ComponentMask.SoldierComponent | ComponentMask.MoverComponent)] = tempChunks;
+                MoveEntities(systemManager.GetWorld());
             }
 
         }
 
-        internal void MoveEntities(ComponentContainer<MoverComponent> moverComponentContainer, 
-                                   ComponentContainer<CoordinateComponent> coordinateComponentContainer,
-                                   ComponentContainer<RenderComponent> renderComponetContainer)
+        internal void MoveEntities(ECSWorld world)
         {
-           
+            var moverComponentContainer = world.GetComponentContainer<MoverComponent>();
+            var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>();
+            var renderComponentContainer = world.GetComponentContainer<RenderComponent>();
 
             for (int i = 0; i < moverComponentContainer.EntityCount; i++)
             {
 
                     int entityId = moverComponentContainer.EntityIds[i];
-                    var moverComponent = moverComponentContainer.GetComponent(entityId);
+                    ref var moverComponent = ref moverComponentContainer.GetComponent(entityId);
                     
                     if (!moverComponent.HasPath) continue;
-                    var coordinateComponent = coordinateComponentContainer.GetComponent(entityId);
-                    var renderComponent = renderComponetContainer.GetComponent(entityId);
+                    ref var coordinateComponent = ref coordinateComponentContainer.GetComponent(entityId);
+                    ref var renderComponent = ref renderComponentContainer.GetComponent(entityId);
 
                     if (moverComponent.PathStepNumber != moverComponent.Path.Length)
                     {
@@ -64,9 +55,6 @@ namespace Game.ECS.Systems
                                                             Quaternion.identity,
                                                             Vector3.one);
                         
-                        
-                       // UpdateRenderMatrix.Invoke(ComponentMask.DynamicRenderComponent, i, moverComponent.Path[moverComponent.PathStepNumber]);
-
                         moverComponent.PathStepNumber++;
 
                     }
@@ -78,10 +66,6 @@ namespace Game.ECS.Systems
                        // SetTileOccupant.Invoke(coordinateComponent, entityId);
 
                     }
-
-                    moverComponentContainer.UpdateComponent(entityId, moverComponent);
-                    coordinateComponentContainer.UpdateComponent(entityId, coordinateComponent);
-                    renderComponetContainer.UpdateComponent(entityId, renderComponent);
                 }
             
         }

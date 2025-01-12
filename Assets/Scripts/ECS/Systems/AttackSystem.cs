@@ -10,6 +10,7 @@ public class AttackSystem : IUpdateSystem
     public void Update(SystemManager systemManager)
     {
         ECSWorld world=systemManager.GetWorld();
+        if (!world.HasComponentContainer<AttackComponent>()) return;
         var attackComponentContainer = world.GetComponentContainer<AttackComponent>();
         for (int i = 0; i < attackComponentContainer.EntityCount; i++)
         {
@@ -23,18 +24,9 @@ public class AttackSystem : IUpdateSystem
                 targetHealthComponent.Health -= attackComponent.Damage;
                 if(targetHealthComponent.Health<=0)
                 {
-                    Debug.Log("DISPOSE");
                     world.DisposeEntity(attackComponent.TargetId);
                 }
-                else
-                {
-
-                //world.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
-                }
-                
-          
                 attackComponent.TargetId = -1;
-               // world.UpdateComponent(attackComponentContainer.EntityIds[i], attackComponent);
      
             }
         }

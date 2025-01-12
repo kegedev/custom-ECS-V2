@@ -10,13 +10,10 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     Mesh[] meshes;
     Material[] materials;
 
-    ECSWorld _world;
-
     public ushort ActiveStateMask => (ushort)(GameState.Construction | GameState.MainState);
 
     public void Init(SystemManager systemManager)
     {
-        _world = systemManager.GetWorld();
         meshes = ((MeshContainer)systemManager.GetSharedData<MeshContainer>()).Meshes;
         materials = ((MaterialContainer)systemManager.GetSharedData<MaterialContainer>()).Materials;
 
@@ -24,7 +21,7 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     public void Update(SystemManager systemManager)
     {
 
-        RenderEntities(_world.GetComponentContainer<RenderComponent>());
+        RenderEntities(systemManager.GetWorld().GetComponentContainer<RenderComponent>());
     }
 
     private void RenderEntities(ComponentContainer<RenderComponent> renderComponentContainer)//rendercomponent containerla gir buraya

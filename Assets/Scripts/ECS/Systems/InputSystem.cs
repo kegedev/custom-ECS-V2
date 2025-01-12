@@ -12,7 +12,7 @@ using UnityEngine.EventSystems;
 
 namespace Game.ECS.Systems
 {
-    public class InputSystem : IInitSystem, IUpdateSystem
+    public class InputSystem : IUpdateSystem
     {
         [SerializeField] private Camera _camera;
         [SerializeField] private CameraController _cameraController;
@@ -23,14 +23,11 @@ namespace Game.ECS.Systems
 
         public ushort ActiveStateMask => (ushort)(GameState.Construction | GameState.MainState);
 
-        public InputSystem(Camera camera)
+        public InputSystem(ECSWorld world,Camera camera)
         {
             _camera = camera;
             _cameraController = camera.GetComponent<CameraController>();
-        }
-        public void Init(SystemManager systemManager)
-        {
-            _world = systemManager.GetWorld();
+            _world = world;
         }
         public void Update(SystemManager systemManager)
         {

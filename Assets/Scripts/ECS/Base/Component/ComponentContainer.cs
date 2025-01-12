@@ -32,18 +32,6 @@ namespace Game.ECS.Base.Components
             EntityCount++;
         }
 
-        //public ref T GetComponent(int entityId)
-        //{
-        //    for (int i = 0; i < EntityCount; i++)
-        //    {
-        //        if (EntityIds[i] == entityId)
-        //        {
-        //            return ref Components.ElementAt<T>(i);
-        //        }
-        //    }
-
-        //    throw new Exception("Entity ID not found in the container "+ entityId);
-        //}
 
     
         public unsafe ref T GetComponent(int entityId)
@@ -53,7 +41,7 @@ namespace Game.ECS.Base.Components
                 if (EntityIds[i] == entityId)
                 {
                     return ref UnsafeUtility.ArrayElementAsRef<T>(Components.GetUnsafePtr(), i);
-                   // return ref Components[i];
+            
                 }
             }
 
@@ -61,29 +49,6 @@ namespace Game.ECS.Base.Components
         }
       
 
-
-        public bool HasEntity(int entityId)
-        {
-            for (int i = 0; i < EntityCount; i++)
-            {
-                if (EntityIds[i] == entityId)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public void UpdateComponent(int entityId, T component) 
-        {
-            for (int i = 0; i < EntityCount; i++)
-            {
-                if (EntityIds[i] == entityId)
-                {
-                    Components[i]=component;
-                }
-            }
-        }
 
         public bool HasComponent(int entityId)
         {
@@ -96,6 +61,7 @@ namespace Game.ECS.Base.Components
             }
             return false;
         }
+
 
         public void RemoveComponent(int entityId)
         {

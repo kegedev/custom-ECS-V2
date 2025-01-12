@@ -5,6 +5,8 @@ using Game.Factory.Base;
 using Game.Pool;
 using System.ComponentModel;
 using System;
+using UnityEngine.LightTransport;
+using UnityEngine;
 
 namespace Game.ECS.Base
 {
@@ -13,7 +15,7 @@ namespace Game.ECS.Base
         public int EntityIdCounter;
         public int EntityCount;
         public NativeArray<int> Entities; //tüm entitylerin IDleri
-        public Dictionary<ComponentMask, object> ComponentContainers; //<componentMask,ComponentContainer>
+        public Dictionary<Type, object> ComponentContainers; //<componentMask,ComponentContainer>
 
         //quadtree structuna cek burayı
         public NativeList<QuadTreeNodeData> quadTreeNodeDatas = new NativeList<QuadTreeNodeData>(Allocator.Persistent);
@@ -22,10 +24,12 @@ namespace Game.ECS.Base
         public int quadtreeNodeIndex = 0;
         public QuadTreeNodeData TileQuadtreeRoot;
 
+
+
         public ECSWorld(int initialEntityCount) 
         {
             Entities = new NativeArray<int>(initialEntityCount, Allocator.Persistent);
-            ComponentContainers= new Dictionary<ComponentMask, object>();
+            ComponentContainers= new Dictionary<Type, object>();
         }
 
         public void AddComponentToEntity<T>(int entityId, ComponentMask componentMask, object component) where T : struct
@@ -33,20 +37,20 @@ namespace Game.ECS.Base
             if (component == null)
                 throw new Exception("Component cannot be null.");
 
-            if (!ComponentContainers.TryGetValue(componentMask, out var componentContainer))
+            if (!ComponentContainers.TryGetValue(typeof(T), out var componentContainer))
             {
                 componentContainer = new ComponentContainer<T>();
-                ComponentContainers.Add(componentMask, componentContainer);
+                ComponentContainers.Add(typeof(T), componentContainer);
             }
 
             ((ComponentContainer<T>)componentContainer).AddComponent(entityId, (T)component);
         }
         public T GetComponentOfEntity<T>(int entityId, ComponentMask componentMask) where T : struct
         {
-            if (!ComponentContainers.TryGetValue(componentMask, out var componentContainer))
+            if (!ComponentContainers.TryGetValue(typeof(T), out var componentContainer))
             {
                 componentContainer = new ComponentContainer<T>();
-                ComponentContainers.Add(componentMask, componentContainer);
+                ComponentContainers.Add(typeof(T), componentContainer);
             }
 
            return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
@@ -110,7 +114,7 @@ namespace Game.ECS.Base
 
         public void AddComponentContainer<T>(ComponentMask componentMask) where T : struct
         {
-            if (ComponentContainers.ContainsKey(componentMask))
+            if (ComponentContainers.ContainsKey(typeof(T)))
             {
                 throw new System.Exception($"Component container with mask {componentMask} already exists.");
             }
@@ -122,18 +126,59 @@ namespace Game.ECS.Base
                 EntityCount = 0
             };
 
-            ComponentContainers.Add(componentMask, newContainer);
+            ComponentContainers.Add(typeof(T), newContainer);
         }
 
-        public ComponentContainer<T> GetComponentContainer<T>(ComponentMask key) where T : struct
+        public ComponentContainer<T> GetComponentContainer<T>() where T : struct
         {
-            if (ComponentContainers.ContainsKey(key))
+            if (ComponentContainers.ContainsKey(typeof(T)))
             {
-                return (ComponentContainer<T>)ComponentContainers[key];
+                return (ComponentContainer<T>)ComponentContainers[typeof(T)];
             }
             else
             {
-                throw new System.Exception($"ComponentContainers does not include key: {key}");
+                throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
+            }
+        }
+
+        public T GetComponent<T>(int entityId) where T : struct
+        {
+            if (ComponentContainers.ContainsKey(typeof(T)))
+            {
+                return ((ComponentContainer<T>)ComponentContainers[typeof(T)]).GetComponent(entityId);
+            }
+            else
+            {
+                throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
+            }
+        }
+
+        public void UpdateComponent<T>(int entityId,T component) where T : struct
+        {
+            if (ComponentContainers.ContainsKey(typeof(T)))
+            {
+                 ((ComponentContainer<T>)ComponentContainers[typeof(T)]).UpdateComponent(entityId, component);
+            }
+            else
+            {
+                throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
+            }
+        }
+
+        public bool HasComponentContainer<T>()
+        {
+            return ComponentContainers.ContainsKey(typeof(T));
+        }
+
+        public bool HasComponent<T>(int entityId) where T : struct
+        {
+            if (ComponentContainers.ContainsKey(typeof(T)))
+            {
+               return ((ComponentContainer<T>)ComponentContainers[typeof(T)]).HasComponent(entityId);
+            }
+            else
+            {
+                throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
             }
         }
     }

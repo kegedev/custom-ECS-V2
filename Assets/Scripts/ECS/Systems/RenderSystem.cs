@@ -24,7 +24,7 @@ public class RenderSystem : IInitSystem, IUpdateSystem
     public void Update(SystemManager systemManager)
     {
 
-        RenderEntities(((ComponentContainer<RenderComponent>)_world.ComponentContainers[ComponentMask.RenderComponent]).Components);
+        RenderEntities(((ComponentContainer<RenderComponent>)_world.ComponentContainers[typeof(RenderComponent)]).Components);
     }
 
     private void RenderEntities(NativeArray<RenderComponent> renderComponents)//rendercomponent containerla gir buraya

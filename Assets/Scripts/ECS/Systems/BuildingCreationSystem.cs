@@ -33,17 +33,14 @@ namespace Game.ECS.Systems
         {
          
             int newEntityID = world.CreateNewEntity();
-            var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-            var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
 
-            var rootTileCoord = coordinateComponentContainer.GetComponent(rootTileId);
-
-           
+            var rootTileCoord=world.GetComponent<CoordinateComponent>(rootTileId);
+     
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(rootTileCoord.Coordinate);
 
             world.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                               ComponentMask.CoordinateComponent,
-            coordinateComponent);
+                                                            ComponentMask.CoordinateComponent,
+                                                            coordinateComponent);
 
             world.AddComponentToEntity<AreaComponent>(newEntityID,
                                                           ComponentMask.AreaComponent,
@@ -65,77 +62,20 @@ namespace Game.ECS.Systems
 
                     if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
                         continue;
-                    int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
-                    world.quadTreeNodeDatas,
-                    world.QuadtreeNodeIndexes,
-                                                   world.QuadtreeLeafIndexes,
-                    world.TileQuadtreeRoot,
-                                                   new Vector2(pcAbsoluteX, pcAbsoluteY));
-                    var renderComp = renderComponentContainer.GetComponent(tileId);
-                    var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
+                    int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                         world.quadTreeNodeDatas,
+                                                         world.QuadtreeNodeIndexes,
+                                                         world.QuadtreeLeafIndexes,
+                                                         world.TileQuadtreeRoot,
+                                                         new Vector2(pcAbsoluteX, pcAbsoluteY));
+
+                    var renderComp = world.GetComponent<RenderComponent>(tileId);
+                    var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                       
                     
                     renderComp.TextureOffset = MapConstants.BuildingOffsets[buildingType];
-                    renderComponentContainer.UpdateComponent(tileId, renderComp);
+                    world.UpdateComponent(tileId, renderComp);
                     SetOccupant.Invoke(coordinateComp, newEntityID);
-                }
-            }
-        }
-
-        public void CreateBuildings(ECSWorld world)
-        {
-            for (int x = 0; x < 10; x++)
-            {
-                for (int y = 0; y < 10; y++)
-                {
-                    int absoluteX = UnityEngine.Random.Range(50, 120);
-                    int absoluteY = UnityEngine.Random.Range(50, 120);
-                    int2 coordinate = new int2(absoluteX, absoluteY);
-                    Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(absoluteX, absoluteY, 0), Quaternion.identity, Vector3.one * 0.95f);
-
-                    if (absoluteX >= MapSettings.MapWidth || absoluteY >= MapSettings.MapHeight)
-                        continue;
-
-                    int newEntityID = world.CreateNewEntity();
-                 
-                    CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(coordinate);
-
-                    world.AddComponentToEntity<CoordinateComponent>(newEntityID,
-                                                                       ComponentMask.CoordinateComponent,
-                                                                       coordinateComponent);
-
-                    world.AddComponentToEntity<AreaComponent>(newEntityID,
-                                                                  ComponentMask.AreaComponent,
-                                                                  _factoryManager.GetInstance<AreaComponent>(new object[] { 5,5}));
-
-                    var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-                    var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
-                    //Placeholder creation for building
-                    for (int w = 0; w < 5; w++)
-                    {
-                        for (int h = 0; h < 5; h++)
-                        {
-                            int pcAbsoluteX = coordinate.x+w;
-                            int pcAbsoluteY = coordinate.y + h;
-
-                            if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
-                                continue;
-                            int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
-                                                           world.quadTreeNodeDatas,
-                                                           world.QuadtreeNodeIndexes,
-                                                           world.QuadtreeLeafIndexes,
-                                                           world.TileQuadtreeRoot,
-                                                           new Vector2(pcAbsoluteX,pcAbsoluteY));
-                            var renderComp= renderComponentContainer.GetComponent(tileId);
-                            var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
-                          
-                            renderComp.TextureOffset = new float2(0.5f,0.5f);
-                            renderComponentContainer.UpdateComponent(tileId,renderComp);
-                            SetOccupant.Invoke(coordinateComp, newEntityID);
-                        }
-                    }
-
-                 
-
                 }
             }
         }

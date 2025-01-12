@@ -74,15 +74,15 @@ internal static class QuerySystem
               
                     if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                     {
-                        int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+                        int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                              world.quadTreeNodeDatas,
                                                              world.QuadtreeNodeIndexes,
                                                              world.QuadtreeLeafIndexes,
                                                              world.TileQuadtreeRoot,
                                                              checkCoordinate);
 
-                        var coordinateComp = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent).GetComponent(tileId);
-                        var tileComp = world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent).GetComponent(tileId);
+                        var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                        var tileComp = world.GetComponent<TileComponent>(tileId);
                        
                         if(tileComp.OccupantEntityID==-1)
                         {
@@ -91,7 +91,7 @@ internal static class QuerySystem
             }
         }
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
-        return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+        return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                              world.quadTreeNodeDatas,
                                                              world.QuadtreeNodeIndexes,
                                                              world.QuadtreeLeafIndexes,
@@ -104,22 +104,19 @@ internal static class QuerySystem
     {
 
         List<int2> neighbors = new List<int2>();
-        //Vector3 buildingRoot = BuildingChunkHolder.Chunks[0].GetComponentArray<PositionComponent>()[selectedBuildingIndex].Position;
-
+   
         Vector2 checkCoordinate = new Vector2(coordinate.x, coordinate.y);
 
-        int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+        int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                                  world.quadTreeNodeDatas,
                                                                  world.QuadtreeNodeIndexes,
                                                                  world.QuadtreeLeafIndexes,
                                                                  world.TileQuadtreeRoot,
                                                                  checkCoordinate);
-        var tileComponentContainer = world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
-        var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
 
-        int buildingEntityId= tileComponentContainer.GetComponent(tileId).OccupantEntityID;
+        int buildingEntityId= world.GetComponent<TileComponent>(tileId).OccupantEntityID;
 
-        int2 buildingRoot = coordinateComponentContainer.GetComponent(buildingEntityId).Coordinate;
+        int2 buildingRoot = world.GetComponent<CoordinateComponent>(buildingEntityId).Coordinate;
 
         for (int x = -1; x < width + 1; x++)
         {
@@ -148,7 +145,7 @@ internal static class QuerySystem
 
 
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
-        return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+        return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                              world.quadTreeNodeDatas,
                                                              world.QuadtreeNodeIndexes,
                                                              world.QuadtreeLeafIndexes,
@@ -191,15 +188,15 @@ internal static class QuerySystem
     {
         if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
         {
-            int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+            int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                         world.quadTreeNodeDatas,
                                                         world.QuadtreeNodeIndexes,
                                                         world.QuadtreeLeafIndexes,
                                                         world.TileQuadtreeRoot,
                                                         checkCoordinate);
 
-            var coordinateComp = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent).GetComponent(tileId);
-            var tileComp = world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent).GetComponent(tileId);
+            var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+            var tileComp = world.GetComponent<TileComponent>(tileId);
 
             if (tileComp.OccupantEntityID == -1)
             {

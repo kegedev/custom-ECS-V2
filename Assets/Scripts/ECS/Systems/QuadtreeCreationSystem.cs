@@ -18,7 +18,7 @@ public class QuadtreeCreationSystem : IInitSystem
         _world = systemManager.GetWorld();
         //_world.TileQuadtreeRoot = CreateQuadtreeChunkFromChunks(_world, _world.GetChunksByMask(ComponentMask.CoordinateComponent | ComponentMask.TileComponent));
 
-        _world.TileQuadtreeRoot = CreateQuadTree(((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent]).Components, 128, 128, 1);
+        _world.TileQuadtreeRoot = CreateQuadTree(((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)]).Components, 128, 128, 1);
 
     }
 

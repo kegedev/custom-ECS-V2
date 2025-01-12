@@ -1,13 +1,8 @@
 using Game.ECS.Base;
 using Game.ECS.Base.Components;
 using Game.ECS.Base.Systems;
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -104,7 +99,7 @@ namespace Game.ECS.Systems
                 }
 
                 var neighbors = GetNeighbors(currentTile);
-            
+
 
                 for (int i = 0; i < neighbors.Count; i++)
                 {
@@ -135,7 +130,7 @@ namespace Game.ECS.Systems
                         }
                     }
                 }
-              
+
             }
             return null;
         }
@@ -161,33 +156,34 @@ namespace Game.ECS.Systems
             foreach (var direction in MapSettings.Directions)
             {
                 Vector2 checkCoordinate = new Vector2(CurrentNode.Coordinate.x + direction.x, CurrentNode.Coordinate.y + direction.y);
-              
-                    if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
+
+                if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
+                {
+                    int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                       _world.quadTreeNodeDatas,
+                                                       _world.QuadtreeNodeIndexes,
+                                                       _world.QuadtreeLeafIndexes,
+                                                       _world.TileQuadtreeRoot,
+                                                       checkCoordinate);
+
+                    var coordinateComp = _world.GetComponent<CoordinateComponent>(tileId);
+                    var tileComp = _world.GetComponent<TileComponent>(tileId);
+
+                    neighbors.Add(new AStarNode()
                     {
-                        int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
-                                                           _world.quadTreeNodeDatas,
-                                                           _world.QuadtreeNodeIndexes,
-                                                           _world.QuadtreeLeafIndexes,
-                                                           _world.TileQuadtreeRoot,
-                                                           checkCoordinate);
-
-                        var coordinateComp = _world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent).GetComponent(tileId);
-                        var tileComp = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent).GetComponent(tileId);
-                        neighbors.Add(new AStarNode()
-                        {
-                            MoverIndex = tileComp.OccupantEntityID,
-                            Coordinate = coordinateComp.Coordinate
-                        });
+                        MoverIndex = tileComp.OccupantEntityID,
+                        Coordinate = coordinateComp.Coordinate
+                    });
 
 
 
-                    }
+                }
 
 
-                
+
             }
 
-           
+
 
             return neighbors;
         }

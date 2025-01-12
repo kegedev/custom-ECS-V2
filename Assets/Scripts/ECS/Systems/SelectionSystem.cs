@@ -31,51 +31,49 @@ namespace Game.ECS.Systems
             {
                 TryToConstruct.Invoke();
             }
-            int occupantEntityId = ((ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent]).GetComponent(selectedTileId).OccupantEntityID;
-            int2 selectedTileCoordinate= ((ComponentContainer<CoordinateComponent>)_world.ComponentContainers[ComponentMask.CoordinateComponent]).GetComponent(selectedTileId).Coordinate;
-            if (_world.ComponentContainers.ContainsKey(ComponentMask.MoverComponent) && ((ComponentContainer<MoverComponent>)_world.ComponentContainers[ComponentMask.MoverComponent]).HasComponent(occupantEntityId))
+
+            int occupantEntityId=_world.GetComponent<TileComponent>(selectedTileId).OccupantEntityID;
+            int2 selectedTileCoordinate = _world.GetComponent<CoordinateComponent>(selectedTileId).Coordinate;
+           
+            if (_world.HasComponentContainer<MoverComponent>() && _world.HasComponent<MoverComponent>(occupantEntityId))
             {
                 if (SelectedMoverID == -1)
                 {
                     SetSelectedMover(occupantEntityId);
-                    var soldierComponentContainer = (ComponentContainer<SoldierComponent>)_world.ComponentContainers[ComponentMask.SoldierComponent];
-                    var healthComponentContainer = (ComponentContainer<HealthComponent>)_world.ComponentContainers[ComponentMask.HealthComponent];
-                    var damageComponentContainer = (ComponentContainer<AttackComponent>)_world.ComponentContainers[ComponentMask.AttackComponent];
-                    var soldierComponent = soldierComponentContainer.GetComponent(SelectedMoverID);
-                    var healthComponent = healthComponentContainer.GetComponent(SelectedMoverID);
-                    var damageComponent = damageComponentContainer.GetComponent(SelectedMoverID);
+
+                    var soldierComponent=_world.GetComponent<SoldierComponent>(SelectedMoverID);
+                    var healthComponent =_world.GetComponent<HealthComponent>(SelectedMoverID);
+                    var damageComponent = _world.GetComponent<AttackComponent>(SelectedMoverID);
+
                     SoldierSelected.Invoke((SoldierType)soldierComponent.SoldierType, healthComponent.Health, damageComponent.Damage);
                 }
                 else
                 {
                    int closestFreeNeighbour= QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
-                    var attackComponentContainer = _world.GetComponentContainer<AttackComponent>(ComponentMask.AttackComponent);
-                    var attackComponent = attackComponentContainer.GetComponent(SelectedMoverID);
-                    var tileComponentContainer = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
-                    var tileComponent = tileComponentContainer.GetComponent(selectedTileId);
-                    attackComponent.TargetId= tileComponent.OccupantEntityID;
-                    attackComponentContainer.UpdateComponent(SelectedMoverID, attackComponent);
-                    SetMoverPath(closestFreeNeighbour);
 
+                    var attackComponent=_world.GetComponent<AttackComponent>(SelectedMoverID);
+                    var tileComponent = _world.GetComponent<TileComponent>(selectedTileId);
+                    attackComponent.TargetId= tileComponent.OccupantEntityID;
+                    _world.UpdateComponent(SelectedMoverID, attackComponent);
+                    SetMoverPath(closestFreeNeighbour);
                 }
             }else if(SelectedMoverID == -1 && occupantEntityId != -1)
             {
                 SelectedBuildingID = occupantEntityId;
-                var buildingComponentContainer=(ComponentContainer<BuildingComponent>)_world.ComponentContainers[ComponentMask.BuildingComponent];
-                var buildingComponent= buildingComponentContainer.GetComponent(SelectedBuildingID);
-                var healthComponentContainer = (ComponentContainer<HealthComponent>)_world.ComponentContainers[ComponentMask.HealthComponent];
-                var healthComponent = healthComponentContainer.GetComponent(SelectedBuildingID);
+                var buildingComponent = _world.GetComponent<BuildingComponent>(SelectedBuildingID);
+                var healthComponent = _world.GetComponent<HealthComponent>(SelectedBuildingID);
+
                 BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, healthComponent.Health);
                 Debug.Log("BUILDING SELECTED");
             }else if(SelectedMoverID != -1 && occupantEntityId != -1)
             {
                 Debug.Log("MOVE  TO BUILDING");
-                var attackComponentContainer = _world.GetComponentContainer<AttackComponent>(ComponentMask.AttackComponent);
-                var attackComponent = attackComponentContainer.GetComponent(SelectedMoverID);
-                var tileComponentContainer = _world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
-                var tileComponent = tileComponentContainer.GetComponent(selectedTileId);
+                var attackComponent = _world.GetComponent<AttackComponent>(SelectedMoverID);
+                var tileComponent = _world.GetComponent<TileComponent>(selectedTileId);
+
+            
                 attackComponent.TargetId = tileComponent.OccupantEntityID;
-                attackComponentContainer.UpdateComponent(SelectedMoverID, attackComponent);
+                _world.UpdateComponent(SelectedMoverID, attackComponent);
 
                 int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
                 SetMoverPath(closestFreeNeighbour);
@@ -92,22 +90,20 @@ namespace Game.ECS.Systems
 
         public void SetMoverPath(int targetTileId)
         {
-          
-            var coordinateCompContainer = _world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
-            int2 startCoord = coordinateCompContainer.GetComponent(SelectedMoverID).Coordinate;
-            int2 targetCoord = coordinateCompContainer.GetComponent(targetTileId).Coordinate;
+            int2 startCoord = _world.GetComponent<CoordinateComponent>(SelectedMoverID).Coordinate;
+            int2 targetCoord = _world.GetComponent<CoordinateComponent>(targetTileId).Coordinate;
+
             NativeArray <int2> path = GetMoverPath.Invoke(SelectedMoverID, startCoord, targetCoord);
             
             if (path.Length == 0)
             { ResetSelectedMoverIndex(); return; }
 
-            var moverComponentContainer = _world.GetComponentContainer<MoverComponent>(ComponentMask.MoverComponent);
-            var moverComponent = moverComponentContainer.GetComponent(SelectedMoverID);
+            var moverComponent = _world.GetComponent<MoverComponent>(SelectedMoverID);
 
             moverComponent.Path = path;
             moverComponent.HasPath = true;
-         
-            moverComponentContainer.UpdateComponent(SelectedMoverID,moverComponent);
+
+            _world.UpdateComponent(SelectedMoverID,moverComponent);
 
             ResetSelectedMoverIndex();
         }

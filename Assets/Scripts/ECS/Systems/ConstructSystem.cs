@@ -38,7 +38,7 @@ namespace Game.ECS.Systems
         {
           
             ECSWorld world=systemManager.GetWorld();
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
+            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)world.ComponentContainers[typeof(QuadTreeLeafComponent)],
                                     world.quadTreeNodeDatas,
                                     world.QuadtreeNodeIndexes,
                                     world.QuadtreeLeafIndexes,
@@ -76,11 +76,12 @@ namespace Game.ECS.Systems
         private bool CheckContructionArea(ECSWorld world)
         {
             bool isAreafree = true;
-         
-            var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-            var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
-            var tileComponentContainer = world.GetComponentContainer<TileComponent>(ComponentMask.TileComponent);
-            int2 coordinate = coordinateComponentContainer.GetComponent(currentTileId).Coordinate;
+
+            //var renderComponentContainer = world.GetComponentContainer<RenderComponent>();
+            //var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>();
+            //var tileComponentContainer = world.GetComponentContainer<TileComponent>();
+            int2 coordinate = world.GetComponent<CoordinateComponent>(currentTileId).Coordinate;
+            //int2 coordinate = coordinateComponentContainer.GetComponent(currentTileId).Coordinate;
             for (int w = 0; w < 5; w++)
             {
                 for (int h = 0; h < 5; h++)
@@ -90,20 +91,24 @@ namespace Game.ECS.Systems
 
                     if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
                         return false;
-                    int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(ComponentMask.QuadTreeLeafComponent),
+                    int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                    world.quadTreeNodeDatas,
                                                    world.QuadtreeNodeIndexes,
                                                    world.QuadtreeLeafIndexes,
                                                    world.TileQuadtreeRoot,
                                                    new Vector2(pcAbsoluteX, pcAbsoluteY));
-                    var renderComp = renderComponentContainer.GetComponent(tileId);
-                    var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
-                    var tileComp = tileComponentContainer.GetComponent(tileId);
+
+                    var renderComp = world.GetComponent<RenderComponent>(tileId);
+                    var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                    var tileComp = world.GetComponent<TileComponent>(tileId);
+                    //var renderComp = renderComponentContainer.GetComponent(tileId);
+                    //var coordinateComp = coordinateComponentContainer.GetComponent(tileId);
+                    //var tileComp = tileComponentContainer.GetComponent(tileId);
                     _previewTileIds.Add(tileId);
                     _previousOffsets.Add( renderComp.TextureOffset);
                     if (tileComp.OccupantEntityID!=-1) isAreafree = false;
                     renderComp.TextureOffset = new float2(0.5f, 0.5f);
-                    renderComponentContainer.UpdateComponent(tileId, renderComp);
+                    world.UpdateComponent(tileId, renderComp);
   
                 }
             }
@@ -113,29 +118,25 @@ namespace Game.ECS.Systems
 
         private void ShowPreview(ECSWorld world, bool isAreaFree)
         {
-            var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-
+            
             foreach (var previewTileId in _previewTileIds)
             {
-             
-                var renderComp = renderComponentContainer.GetComponent(previewTileId);
-         
+             var renderComp=world.GetComponent<RenderComponent>(previewTileId);
+                
                 renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree? _buildingType : BuildingType.PreviewRed];
-                renderComponentContainer.UpdateComponent(previewTileId, renderComp);
+                world.UpdateComponent(previewTileId, renderComp);
+              
             }
     
         }
         private void ClearPreview(ECSWorld world)
         {
-            int counter = 0;
-            var renderComponentContainer = world.GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
-          
             for (int i = 0; i < _previewTileIds.Count; i++)
             {
-                var renderComp = renderComponentContainer.GetComponent(_previewTileIds[i]);
+                var renderComp = world.GetComponent<RenderComponent>(_previewTileIds[i]);
             
-                renderComp.TextureOffset = _previousOffsets[counter++];
-                renderComponentContainer.UpdateComponent(_previewTileIds[i], renderComp);
+                renderComp.TextureOffset = _previousOffsets[i];
+                world.UpdateComponent(_previewTileIds[i], renderComp);
             }
             _previousOffsets.Clear();
             _previewTileIds.Clear();

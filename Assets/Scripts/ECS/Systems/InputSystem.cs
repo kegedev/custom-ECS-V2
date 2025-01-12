@@ -60,7 +60,7 @@ namespace Game.ECS.Systems
             Vector2 intersection = new Vector2(worldPosition.x , worldPosition.y );
       
 
-            int selectedTileId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
+            int selectedTileId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
                                        _world.quadTreeNodeDatas,
                                        _world.QuadtreeNodeIndexes,
                                        _world.QuadtreeLeafIndexes,

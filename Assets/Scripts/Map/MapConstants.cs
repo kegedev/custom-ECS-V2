@@ -43,4 +43,6 @@ public static class MapConstants
         { BuildingType.Barrack, 100 },
         { BuildingType.PowerPlant, 50 },
     };
+
+
 }

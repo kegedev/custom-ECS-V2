@@ -10,18 +10,22 @@ public class AttackSystem : IUpdateSystem
     public void Update(SystemManager systemManager)
     {
         ECSWorld world=systemManager.GetWorld();
-        var attackComponentContainer = world.GetComponentContainer<AttackComponent>(ComponentMask.AttackComponent);
+        var attackComponentContainer = world.GetComponentContainer<AttackComponent>();
         for (int i = 0; i < attackComponentContainer.EntityCount; i++)
         {
-            var attackComponent = attackComponentContainer.GetComponent(attackComponentContainer.EntityIds[i]);
+            var attackComponent = world.GetComponent<AttackComponent>(attackComponentContainer.EntityIds[i]);
+           
+
             if (attackComponent.TargetId!=-1)
             {
-                var healthComponentContainer = world.GetComponentContainer<HealthComponent>(ComponentMask.HealthComponent);
-                var targetHealthComponent = healthComponentContainer.GetComponent(attackComponent.TargetId);
+                var targetHealthComponent = world.GetComponent<HealthComponent>(attackComponent.TargetId);
+                
                 targetHealthComponent.Health -= attackComponent.Damage;
-                healthComponentContainer.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
+                world.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
+          
                 attackComponent.TargetId = -1;
-                attackComponentContainer.UpdateComponent(attackComponentContainer.EntityIds[i],attackComponent);
+                world.UpdateComponent(attackComponentContainer.EntityIds[i], attackComponent);
+     
             }
         }
     }

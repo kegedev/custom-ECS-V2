@@ -20,18 +20,18 @@ namespace Game.ECS.Systems
         {
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
+            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
                                        _world.quadTreeNodeDatas,
                                        _world.QuadtreeNodeIndexes,
                                        _world.QuadtreeLeafIndexes,
                                        _world.TileQuadtreeRoot,
                                        pos);
 
-            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent];
+            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];
             TileComponent tileComponent = componentContainer.GetComponent(tileEntityId);
             tileComponent.OccupantEntityID = occupantEntityId;
             componentContainer.Components[tileEntityId] = tileComponent;
-            _world.ComponentContainers[ComponentMask.TileComponent] = componentContainer;
+            _world.ComponentContainers[typeof(TileComponent)] = componentContainer;
 
 
         }
@@ -40,14 +40,14 @@ namespace Game.ECS.Systems
         {
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[ComponentMask.QuadTreeLeafComponent],
+            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
                                        _world.quadTreeNodeDatas,
                                        _world.QuadtreeNodeIndexes,
                                        _world.QuadtreeLeafIndexes,
                                        _world.TileQuadtreeRoot,
                                        pos);
 
-            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[ComponentMask.TileComponent];
+            ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];
             TileComponent tileComponent = componentContainer.GetComponent(tileEntityId);
             return tileComponent.OccupantEntityID;
 

@@ -31,14 +31,15 @@ namespace Game.ECS.Systems
         {
             int selectedBuildingId = GetSelectedBuildingId.Invoke();
 
-            var coordinateComponentContainer = world.GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
-            var buildingRootCoordinateComponent = coordinateComponentContainer.GetComponent(selectedBuildingId);
+            var buildingRootCoordinateComponent = world.GetComponent<CoordinateComponent>(selectedBuildingId);
+   
           
             Debug.Log("sourceBuildingId "+ selectedBuildingId + " "+ soldierType);
 
             int soldierSpawnTileId=QuerySystem.GetClosestUnoccupiedNeighbourOfArea(world, buildingRootCoordinateComponent.Coordinate,5,5);
 
-            var spawnCoordinateComponent= coordinateComponentContainer.GetComponent(soldierSpawnTileId);
+            var spawnCoordinateComponent = world.GetComponent<CoordinateComponent>(soldierSpawnTileId);
+           
             Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(spawnCoordinateComponent.Coordinate.x, spawnCoordinateComponent.Coordinate.y, 0), Quaternion.identity, Vector3.one * 0.95f);
 
             int newEntityID = world.CreateNewEntity();

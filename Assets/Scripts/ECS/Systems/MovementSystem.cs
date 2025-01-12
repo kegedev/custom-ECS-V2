@@ -22,15 +22,15 @@ namespace Game.ECS.Systems
 
         public void Update(SystemManager systemManager)
         {
-            if (!systemManager.GetWorld().ComponentContainers.ContainsKey(ComponentMask.MoverComponent)) return;
+            if (!systemManager.GetWorld().ComponentContainers.ContainsKey(typeof(MoverComponent))) return;
             movementTimer += Time.deltaTime;
             if (movementTimer >= movementInterval)
             {
                 movementTimer -= movementInterval;
 
-                var moverComponentContainer = systemManager.GetWorld().GetComponentContainer<MoverComponent>(ComponentMask.MoverComponent);
-                var coordinateComponentContainer = systemManager.GetWorld().GetComponentContainer<CoordinateComponent>(ComponentMask.CoordinateComponent);
-                var renderComponentContainer = systemManager.GetWorld().GetComponentContainer<RenderComponent>(ComponentMask.RenderComponent);
+                var moverComponentContainer = systemManager.GetWorld().GetComponentContainer<MoverComponent>();
+                var coordinateComponentContainer = systemManager.GetWorld().GetComponentContainer<CoordinateComponent>();
+                var renderComponentContainer = systemManager.GetWorld().GetComponentContainer<RenderComponent>();
                 
                 MoveEntities(moverComponentContainer, coordinateComponentContainer,renderComponentContainer);
                // systemManager.GetWorld().ChunkContainers[(ushort)(ComponentMask.CoordinateComponent | ComponentMask.SoldierComponent | ComponentMask.MoverComponent)] = tempChunks;

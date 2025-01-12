@@ -13,12 +13,12 @@ public class AttackSystem : IUpdateSystem
         var attackComponentContainer = world.GetComponentContainer<AttackComponent>();
         for (int i = 0; i < attackComponentContainer.EntityCount; i++)
         {
-            var attackComponent = world.GetComponent<AttackComponent>(attackComponentContainer.EntityIds[i]);
+            ref var attackComponent = ref world.GetComponent<AttackComponent>(attackComponentContainer.EntityIds[i]);
            
 
             if (attackComponent.TargetId!=-1)
             {
-                var targetHealthComponent = world.GetComponent<HealthComponent>(attackComponent.TargetId);
+                ref var targetHealthComponent = ref world.GetComponent<HealthComponent>(attackComponent.TargetId);
                 
                 targetHealthComponent.Health -= attackComponent.Damage;
                 if(targetHealthComponent.Health<=0)
@@ -29,12 +29,12 @@ public class AttackSystem : IUpdateSystem
                 else
                 {
 
-                world.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
+                //world.UpdateComponent(attackComponent.TargetId, targetHealthComponent);
                 }
                 
           
                 attackComponent.TargetId = -1;
-                world.UpdateComponent(attackComponentContainer.EntityIds[i], attackComponent);
+               // world.UpdateComponent(attackComponentContainer.EntityIds[i], attackComponent);
      
             }
         }

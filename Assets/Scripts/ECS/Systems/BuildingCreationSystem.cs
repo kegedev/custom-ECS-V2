@@ -58,12 +58,12 @@ namespace Game.ECS.Systems
                                                          world.QuadTreeData,
                                                          new Vector2(pcAbsoluteX, pcAbsoluteY));
 
-                    var renderComp = world.GetComponent<RenderComponent>(tileId);
-                    var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                    ref var renderComp = ref world.GetComponent<RenderComponent>(tileId);
+                    ref var coordinateComp = ref world.GetComponent<CoordinateComponent>(tileId);
 
 
                     renderComp.TextureOffset = MapConstants.BuildingOffsets[buildingType];
-                    world.UpdateComponent(tileId, renderComp);
+                    //world.UpdateComponent(tileId, renderComp);
                     SetOccupant.Invoke(coordinateComp, newEntityID);
                 }
             }
@@ -89,12 +89,12 @@ namespace Game.ECS.Systems
                                                      world.QuadTreeData,
                                                      new Vector2(pcAbsoluteX, pcAbsoluteY));
 
-                var renderComp = world.GetComponent<RenderComponent>(tileId);
-                var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                    ref var renderComp = ref world.GetComponent<RenderComponent>(tileId);
+                    ref var coordinateComp = ref world.GetComponent<CoordinateComponent>(tileId);
 
 
                 renderComp.TextureOffset = ((pcAbsoluteX + pcAbsoluteY) % 2 == 0) ? MapConstants.TerrainOffsets[TerrainType.LightGreen] : MapConstants.TerrainOffsets[TerrainType.DarkGreen];
-                    world.UpdateComponent(tileId, renderComp);
+                   // world.UpdateComponent(tileId, renderComp);
                 SetOccupant.Invoke(coordinateComp, -1);
             }
         }

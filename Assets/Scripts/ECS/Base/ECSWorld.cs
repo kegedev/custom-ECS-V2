@@ -17,7 +17,6 @@ namespace Game.ECS.Base
         public Dictionary<Type, object> ComponentContainers; //<componentMask,ComponentContainer>
         public Action<int> DisposeBuilding;
         private FactoryManager _factoryManager;
-        
 
         public QuadTreeData QuadTreeData = new QuadTreeData()
         {
@@ -26,9 +25,7 @@ namespace Game.ECS.Base
             QuadtreeLeafIndexes = new NativeList<int>(Allocator.Persistent),
             QuadtreeNodeIndex = 0,
         };
-        //quadtree structuna cek burayı
-
-
+   
 
 
         public ECSWorld(int initialEntityCount,FactoryManager factoryManager)
@@ -51,16 +48,16 @@ namespace Game.ECS.Base
 
             ((ComponentContainer<T>)componentContainer).AddComponent(entityId, (T)component);
         }
-        public T GetComponentOfEntity<T>(int entityId) where T : struct
-        {
-            if (!ComponentContainers.TryGetValue(typeof(T), out var componentContainer))
-            {
-                componentContainer = new ComponentContainer<T>();
-                ComponentContainers.Add(typeof(T), componentContainer);
-            }
+        //public T GetComponentOfEntity<T>(int entityId) where T : struct
+        //{
+        //    if (!ComponentContainers.TryGetValue(typeof(T), out var componentContainer))
+        //    {
+        //        componentContainer = new ComponentContainer<T>();
+        //        ComponentContainers.Add(typeof(T), componentContainer);
+        //    }
 
-            return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
-        }
+        //    return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
+        //}
         public int CreateNewEntity()
         {
             if (EntityCount >= Entities.Length)
@@ -83,34 +80,29 @@ namespace Game.ECS.Base
                 {
                     var coordinateComp = GetComponent<CoordinateComponent>(entityId);
                     var disposedEntityTileId = QuerySystem.GetEntityId(GetComponentContainer<QuadTreeLeafComponent>(), QuadTreeData,new UnityEngine.Vector2(coordinateComp.Coordinate.x, coordinateComp.Coordinate.y));
-                    
-                    var tileComponent = GetComponent<TileComponent>(disposedEntityTileId);
-                    tileComponent.OccupantEntityID = -1;
-                    UpdateComponent(disposedEntityTileId, tileComponent);
 
-                    if (GetComponentContainer<AreaComponent>().HasEntity(entityId))
+                    ref var tileComponent = ref GetComponent<TileComponent>(disposedEntityTileId);
+                    tileComponent.OccupantEntityID = -1;
+                   // UpdateComponent(disposedEntityTileId, tileComponent);
+
+     
+
+                    if (GetComponentContainer<AreaComponent>().HasEntity(entityId)) 
                     {
                         DisposeBuilding.Invoke(entityId);
                         GetComponentContainer<AreaComponent>().RemoveComponent(entityId);
                     }
-
-                    if (GetComponentContainer<CoordinateComponent>().HasEntity(entityId)) GetComponentContainer<CoordinateComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<MoverComponent>().HasEntity(entityId)) GetComponentContainer<MoverComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<RenderComponent>().HasEntity(entityId)) GetComponentContainer<RenderComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<SoldierComponent>().HasEntity(entityId)) GetComponentContainer<SoldierComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<HealthComponent>().HasEntity(entityId)) GetComponentContainer<HealthComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<AttackComponent>().HasEntity(entityId)) GetComponentContainer<AttackComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<TileComponent>().HasEntity(entityId)) GetComponentContainer<TileComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<QuadTreeLeafComponent>().HasEntity(entityId)) GetComponentContainer<QuadTreeLeafComponent>().RemoveComponent(entityId);
-                    if(GetComponentContainer<BuildingComponent>().HasEntity(entityId)) GetComponentContainer<BuildingComponent>().RemoveComponent(entityId);
-                   
-              
-
-                   
+                    if (GetComponentContainer<HealthComponent>().HasEntity(entityId)) RemoveComponent<HealthComponent>(entityId);
+                    if (GetComponentContainer<CoordinateComponent>().HasEntity(entityId)) RemoveComponent<CoordinateComponent>(entityId);
+                    if (GetComponentContainer<MoverComponent>().HasEntity(entityId)) RemoveComponent<MoverComponent>(entityId);
+                    if (GetComponentContainer<RenderComponent>().HasEntity(entityId)) RemoveComponent<RenderComponent>(entityId);
+                    if (GetComponentContainer<SoldierComponent>().HasEntity(entityId)) RemoveComponent<SoldierComponent>(entityId);
+                    if (GetComponentContainer<AttackComponent>().HasEntity(entityId)) RemoveComponent<AttackComponent>(entityId);
+                    if (GetComponentContainer<TileComponent>().HasEntity(entityId)) RemoveComponent<TileComponent>(entityId);
+                    if (GetComponentContainer<QuadTreeLeafComponent>().HasEntity(entityId)) RemoveComponent<QuadTreeLeafComponent>(entityId);
+                    if (GetComponentContainer<BuildingComponent>().HasEntity(entityId)) RemoveComponent<BuildingComponent>(entityId);
                     Entities[i] = Entities[EntityCount - 1];
                     EntityCount--;
-
-                   
 
                     return;
                 }
@@ -118,8 +110,16 @@ namespace Game.ECS.Base
 
             throw new System.Exception($"Entity ID {entityId} not found.");
         }
+        void RemoveComponent<T>(int entityId) where T : struct
+        {
+            var container = GetComponentContainer<T>();
+            if (container.HasEntity(entityId))
+            {
+                _factoryManager.ReleaseInstance(GetComponent<T>(entityId));
+                container.RemoveComponent(entityId);
+            }
+        }
 
-        
 
         public void ResizeEntityArray(ref NativeArray<int> entities)
         {
@@ -140,12 +140,11 @@ namespace Game.ECS.Base
                 throw new System.Exception($"Component container with mask {componentMask} already exists.");
             }
 
-            var newContainer = new ComponentContainer<T>()
+            var newContainer = new ComponentContainer<T>
             {
                 EntityIds = new NativeArray<int>(Entities.Length, Allocator.Persistent),
                 Components = new NativeArray<T>(Entities.Length, Allocator.Persistent),
-                EntityCount = 0,
-                
+                EntityCount = 0
             };
 
             ComponentContainers.Add(typeof(T), newContainer);
@@ -163,11 +162,11 @@ namespace Game.ECS.Base
             }
         }
 
-        public T GetComponent<T>(int entityId) where T : struct
+        public ref T GetComponent<T>(int entityId) where T : struct
         {
             if (ComponentContainers.ContainsKey(typeof(T)))
             {
-                return ((ComponentContainer<T>)ComponentContainers[typeof(T)]).GetComponent(entityId);
+                return ref ((ComponentContainer<T>)ComponentContainers[typeof(T)]).GetComponent(entityId);
             }
             else
             {
@@ -175,17 +174,17 @@ namespace Game.ECS.Base
             }
         }
 
-        public void UpdateComponent<T>(int entityId, T component) where T : struct
-        {
-            if (ComponentContainers.ContainsKey(typeof(T)))
-            {
-                ((ComponentContainer<T>)ComponentContainers[typeof(T)]).UpdateComponent(entityId, component);
-            }
-            else
-            {
-                throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
-            }
-        }
+        //public void UpdateComponent<T>(int entityId, T component) where T : struct
+        //{
+        //    if (ComponentContainers.ContainsKey(typeof(T)))
+        //    {
+        //        ((ComponentContainer<T>)ComponentContainers[typeof(T)]).UpdateComponent(entityId, component);
+        //    }
+        //    else
+        //    {
+        //        throw new System.Exception($"ComponentContainers does not include key: {typeof(T)}");
+        //    }
+        //}
 
         public bool HasComponentContainer<T>()
         {

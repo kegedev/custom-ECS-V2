@@ -80,14 +80,14 @@ namespace Game.ECS.Systems
                                                    world.QuadTreeData,
                                                    new Vector2(pcAbsoluteX, pcAbsoluteY));
 
-                    var renderComp = world.GetComponent<RenderComponent>(tileId);
-                    var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
-                    var tileComp = world.GetComponent<TileComponent>(tileId);
+                    ref var renderComp = ref world.GetComponent<RenderComponent>(tileId);
+                    ref var coordinateComp = ref world.GetComponent<CoordinateComponent>(tileId);
+                    ref var tileComp = ref world.GetComponent<TileComponent>(tileId);
                     _previewTileIds.Add(tileId);
                     _previousOffsets.Add(renderComp.TextureOffset);
                     if (tileComp.OccupantEntityID != -1) isAreafree = false;
                     renderComp.TextureOffset = new float2(0.5f, 0.5f);
-                    world.UpdateComponent(tileId, renderComp);
+                 
                 }
             }
             return isAreafree;
@@ -97,19 +97,19 @@ namespace Game.ECS.Systems
         {
             foreach (var previewTileId in _previewTileIds)
             {
-                var renderComp = world.GetComponent<RenderComponent>(previewTileId);
+                ref var renderComp = ref world.GetComponent<RenderComponent>(previewTileId);
                 renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree ? _buildingType : BuildingType.PreviewRed];
-                world.UpdateComponent(previewTileId, renderComp);
+               // world.UpdateComponent(previewTileId, renderComp);
             }
         }
         private void ClearPreview(ECSWorld world)
         {
             for (int i = 0; i < _previewTileIds.Count; i++)
             {
-                var renderComp = world.GetComponent<RenderComponent>(_previewTileIds[i]);
+                ref var renderComp = ref world.GetComponent<RenderComponent>(_previewTileIds[i]);
 
                 renderComp.TextureOffset = _previousOffsets[i];
-                world.UpdateComponent(_previewTileIds[i], renderComp);
+                //world.UpdateComponent(_previewTileIds[i], renderComp);
             }
             _previousOffsets.Clear();
             _previewTileIds.Clear();

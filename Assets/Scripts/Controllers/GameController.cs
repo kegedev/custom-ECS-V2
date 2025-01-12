@@ -32,8 +32,8 @@ public class GameController : MonoBehaviour
     {
         MapSettings.Initialize(128, 128, 1, 8);
         var poolManager = new PoolManager();
-         factoryManager = new FactoryManager(poolManager);
-        _gameWorld = new ECSWorld(256, factoryManager);
+        factoryManager = new FactoryManager(poolManager);
+        _gameWorld = new ECSWorld(256,factoryManager);
         _systemManager = new SystemManager(_gameWorld);
     }
 
@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour
 
     private void SetupSystems()
     {
-    
+  
 
 
         var occupancySystem = new OccupancySystem();

@@ -1,5 +1,9 @@
 ﻿using Unity.Collections;
 using System;
+using System.Linq;
+using Unity.Collections.LowLevel.Unsafe;
+using System.Reflection;
+using UnityEngine;
 
 namespace Game.ECS.Base.Components
 {
@@ -28,18 +32,35 @@ namespace Game.ECS.Base.Components
             EntityCount++;
         }
 
-        public T GetComponent(int entityId)
+        //public ref T GetComponent(int entityId)
+        //{
+        //    for (int i = 0; i < EntityCount; i++)
+        //    {
+        //        if (EntityIds[i] == entityId)
+        //        {
+        //            return ref Components.ElementAt<T>(i);
+        //        }
+        //    }
+
+        //    throw new Exception("Entity ID not found in the container "+ entityId);
+        //}
+
+    
+        public unsafe ref T GetComponent(int entityId)
         {
             for (int i = 0; i < EntityCount; i++)
             {
                 if (EntityIds[i] == entityId)
                 {
-                    return Components[i];
+                    return ref UnsafeUtility.ArrayElementAsRef<T>(Components.GetUnsafePtr(), i);
+                   // return ref Components[i];
                 }
             }
 
-            throw new Exception("Entity ID not found in the container "+ entityId);
+            throw new Exception("Entity ID not found in the container " + entityId);
         }
+      
+
 
         public bool HasEntity(int entityId)
         {

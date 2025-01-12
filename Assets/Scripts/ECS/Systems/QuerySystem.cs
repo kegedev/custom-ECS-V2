@@ -9,11 +9,7 @@ using UnityEngine;
 
 internal static class QuerySystem
 {
-    //public NativeList<QuadTreeNodeData> QuadTreeNodeDatas;
-    //public NativeList<int> QuadtreeNodeIndexes;
-    //public NativeList<int> QuadtreeLeafIndexes;
-    //public int QuadtreeNodeIndex;
-    //public QuadTreeNodeData TileQuadtreeRoot;
+
     internal static int GetEntityId(ComponentContainer<QuadTreeLeafComponent> componentContainer,
                                    in QuadTreeData quadTreeData,
                                    Vector2 point)

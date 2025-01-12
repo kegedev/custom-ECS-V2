@@ -13,7 +13,7 @@ namespace Game.ECS.Systems
         public int SelectedMoverID = -1;
         public int SelectedBuildingID = -1;
 
-        public Func<int, int2, int2, NativeArray<int2>> GetMoverPath;
+        public Action< int, int> SetMoverPath;
         public Action TryToConstruct;
         public Action<SoldierType, int, int> SoldierSelected;
         public Action<BuildingType, int> BuildingSelected;
@@ -53,8 +53,10 @@ namespace Game.ECS.Systems
                     ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
                     ref var tileComponent = ref _world.GetComponent<TileComponent>(selectedTileId);
                     attackComponent.TargetId = tileComponent.OccupantEntityID;
-                   //_world.UpdateComponent(SelectedMoverID, attackComponent);
-                    SetMoverPath(closestFreeNeighbour);
+                    //_world.UpdateComponent(SelectedMoverID, attackComponent);
+                    SetMoverPath.Invoke( closestFreeNeighbour,SelectedMoverID);
+                    ResetSelectedMoverIndex();
+                    // SetMoverPath(closestFreeNeighbour);
                 }
             }
             else if (SelectedMoverID == -1 && occupantEntityId != -1)
@@ -77,37 +79,22 @@ namespace Game.ECS.Systems
                 //_world.UpdateComponent(SelectedMoverID, attackComponent);
 
                 int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
-                SetMoverPath(closestFreeNeighbour);
+                SetMoverPath.Invoke( closestFreeNeighbour, SelectedMoverID);
+                ResetSelectedMoverIndex();
             }
             else if (SelectedMoverID != -1)
             {
                 // Debug.Log("Tile has no occupant");
-                SetMoverPath(selectedTileId);
+                SetMoverPath.Invoke( selectedTileId, SelectedMoverID);
+                ResetSelectedMoverIndex();
             }
 
         }
 
+        
 
 
-        public void SetMoverPath(int targetTileId)
-        {
-            int2 startCoord = _world.GetComponent<CoordinateComponent>(SelectedMoverID).Coordinate;
-            int2 targetCoord = _world.GetComponent<CoordinateComponent>(targetTileId).Coordinate;
-
-            NativeArray<int2> path = GetMoverPath.Invoke(SelectedMoverID, startCoord, targetCoord);
-
-            if (path.Length == 0)
-            { ResetSelectedMoverIndex(); return; }
-
-            ref var moverComponent = ref _world.GetComponent<MoverComponent>(SelectedMoverID);
-
-            moverComponent.Path = path;
-            moverComponent.HasPath = true;
-
-            //_world.UpdateComponent(SelectedMoverID, moverComponent);
-
-            ResetSelectedMoverIndex();
-        }
+        
 
         public void SetSelectedMover(int selectedMoverIndex)
         {

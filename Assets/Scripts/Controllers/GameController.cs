@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
 
     private void InitializeGame()
     {
-        MapSettings.Initialize(128, 128, 1,8);
+        MapSettings.Initialize(256, 256, 1,8);
         var poolManager = new PoolManager();
         _factoryManager = new FactoryManager(poolManager);
         _gameWorld = new ECSWorld(256,_factoryManager);
@@ -55,7 +55,7 @@ public class GameController : MonoBehaviour
         var inputSystem = new InputSystem(_gameWorld,_camera);
         var selectionSystem = new SelectionSystem(_gameWorld);
         var aStarSystem = new AStarSystem(_gameWorld);
-        var movementSystem = new MovementSystem();
+        var movementSystem = new MovementSystem(_gameWorld);
         var constructSystem = new ConstructSystem(_gameWorld);
         var areaSystem=new AreaSystem(_gameWorld);
 
@@ -104,17 +104,19 @@ public class GameController : MonoBehaviour
         inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
 
         // SelectionSystem
-        selectionSystem.GetMoverPath += aStarSystem.GetMoverPath;
+        selectionSystem.SetMoverPath += movementSystem.SetMoverPath;
         selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
         selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
         selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
 
         // MovementSystem
+        movementSystem.GetMoverPath += aStarSystem.GetMoverPath;
         movementSystem.SetTileOccupant += occupancySystem.SetTileOccupant;
 
         // ConstructSystem
         constructSystem.GetInputPos += inputSystem.GetInputPosition;
         constructSystem.SetGameState += _systemManager.UpdateGameState;
+        constructSystem.SetGameState += movementSystem.UpdateGameState;
         constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
         _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
 

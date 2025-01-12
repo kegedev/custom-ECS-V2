@@ -54,11 +54,11 @@ namespace Game.ECS.Systems
         {
             if (isAreF)
             {
-                SetGameState.Invoke(GameState.MainState);
                 if (currentTileId != -1) ClearPreview(_world);
                 _previousOffsets.Clear();
                 _previewTileIds.Clear();
                 ConstructBuilding.Invoke(_buildingType, currentTileId);
+                SetGameState.Invoke(GameState.MainState);
             }
         }
 

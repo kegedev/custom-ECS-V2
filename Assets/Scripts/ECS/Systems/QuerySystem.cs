@@ -6,35 +6,33 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.LightTransport;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 internal static class QuerySystem
 {
-
+    //public NativeList<QuadTreeNodeData> QuadTreeNodeDatas;
+    //public NativeList<int> QuadtreeNodeIndexes;
+    //public NativeList<int> QuadtreeLeafIndexes;
+    //public int QuadtreeNodeIndex;
+    //public QuadTreeNodeData TileQuadtreeRoot;
     internal static int GetEntityId(ComponentContainer<QuadTreeLeafComponent> componentContainer,
-                                   in NativeList<QuadTreeNodeData> quadTreeNodeDatas,
-                                   in NativeList<int> QuadtreeNodeIndexes,
-                                   in NativeList<int> QuadtreeLeavesIndexes,
-                                   in QuadTreeNodeData rootNode,
+                                   in QuadTreeData quadTreeData,
                                    Vector2 point)
     {
-        if (!rootNode.Rect.Contains(point))
+        if (!quadTreeData.TileQuadtreeRoot.Rect.Contains(point))
         {
             Debug.LogError("Point is out of bounds of the root node. "+ point);
             return -1;
         }
 
-        QuadTreeNodeData currentNode = rootNode;
+        QuadTreeNodeData currentNode = quadTreeData.TileQuadtreeRoot;
         while (currentNode.IsDivided)
         {
             bool foundInChild = false;
             for (int i = 0; i < 4; i++)
             {
-                if (quadTreeNodeDatas[QuadtreeNodeIndexes[currentNode.NodesStart + i]].Rect.Contains(point))
+                if (quadTreeData.QuadTreeNodeDatas[quadTreeData.QuadtreeNodeIndexes[currentNode.NodesStart + i]].Rect.Contains(point))
                 {
-                    currentNode = quadTreeNodeDatas[QuadtreeNodeIndexes[currentNode.NodesStart + i]];
+                    currentNode = quadTreeData.QuadTreeNodeDatas[quadTreeData.QuadtreeNodeIndexes[currentNode.NodesStart + i]];
                     foundInChild = true;
                     break;
                 }
@@ -51,12 +49,12 @@ internal static class QuerySystem
 
         for (int i = 0; i < currentNode.Capacity; i++)
         {
-            QuadTreeLeafComponent quadTreeLeafComponent= componentContainer.GetComponent(QuadtreeLeavesIndexes[currentNode.LeavesStart + i]);
+            QuadTreeLeafComponent quadTreeLeafComponent= componentContainer.GetComponent(quadTreeData.QuadtreeLeafIndexes[currentNode.LeavesStart + i]);
            
             if (quadTreeLeafComponent.Rect.Contains(point))
             {
                
-                return QuadtreeLeavesIndexes[currentNode.LeavesStart + i];
+                return quadTreeData.QuadtreeLeafIndexes[currentNode.LeavesStart + i];
             }
         }
 
@@ -75,10 +73,7 @@ internal static class QuerySystem
                     if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                     {
                         int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                             world.quadTreeNodeDatas,
-                                                             world.QuadtreeNodeIndexes,
-                                                             world.QuadtreeLeafIndexes,
-                                                             world.TileQuadtreeRoot,
+                                                             world.QuadTreeData,
                                                              checkCoordinate);
 
                         var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
@@ -92,10 +87,7 @@ internal static class QuerySystem
         }
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
         return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                             world.quadTreeNodeDatas,
-                                                             world.QuadtreeNodeIndexes,
-                                                             world.QuadtreeLeafIndexes,
-                                                             world.TileQuadtreeRoot,
+                                                             world.QuadTreeData,
                                                              new float2(cn.x, cn.y));
 
     }
@@ -108,10 +100,7 @@ internal static class QuerySystem
         Vector2 checkCoordinate = new Vector2(coordinate.x, coordinate.y);
 
         int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                                 world.quadTreeNodeDatas,
-                                                                 world.QuadtreeNodeIndexes,
-                                                                 world.QuadtreeLeafIndexes,
-                                                                 world.TileQuadtreeRoot,
+                                                                 world.QuadTreeData,
                                                                  checkCoordinate);
 
         int buildingEntityId= world.GetComponent<TileComponent>(tileId).OccupantEntityID;
@@ -146,10 +135,7 @@ internal static class QuerySystem
 
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
         return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                             world.quadTreeNodeDatas,
-                                                             world.QuadtreeNodeIndexes,
-                                                             world.QuadtreeLeafIndexes,
-                                                             world.TileQuadtreeRoot,
+                                                             world.QuadTreeData,
                                                              new float2(cn.x, cn.y));
 
     }
@@ -189,10 +175,7 @@ internal static class QuerySystem
         if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
         {
             int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                        world.quadTreeNodeDatas,
-                                                        world.QuadtreeNodeIndexes,
-                                                        world.QuadtreeLeafIndexes,
-                                                        world.TileQuadtreeRoot,
+                                                        world.QuadTreeData,
                                                         checkCoordinate);
 
             var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);

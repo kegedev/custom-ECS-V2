@@ -24,24 +24,15 @@ namespace Game.ECS.Systems
         public void Init(SystemManager systemManager)
         {
             world = systemManager.GetWorld();
-
         }
 
         public void CreateMover(SoldierType soldierType)
         {
             int selectedBuildingId = GetSelectedBuildingId.Invoke();
-
             var buildingRootCoordinateComponent = world.GetComponent<CoordinateComponent>(selectedBuildingId);
-   
-          
-            Debug.Log("sourceBuildingId "+ selectedBuildingId + " "+ soldierType);
-
             int soldierSpawnTileId=QuerySystem.GetClosestUnoccupiedNeighbourOfArea(world, buildingRootCoordinateComponent.Coordinate,5,5);
-
             var spawnCoordinateComponent = world.GetComponent<CoordinateComponent>(soldierSpawnTileId);
-           
             Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(spawnCoordinateComponent.Coordinate.x, spawnCoordinateComponent.Coordinate.y, 0), Quaternion.identity, Vector3.one * 0.95f);
-
             int newEntityID = world.CreateNewEntity();
 
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(spawnCoordinateComponent.Coordinate);
@@ -61,7 +52,5 @@ namespace Game.ECS.Systems
            
             SetOccupant.Invoke(coordinateComponent, newEntityID);
         }
-
     }
-
 }

@@ -31,7 +31,7 @@ namespace Game.ECS.Systems
                 MoverIndex = -1,
                 Coordinate = tagretCoordinate
             };
-            List<AStarNode> aStarNodes = FindPath(startNode, targetNode, _world.TileQuadtreeRoot, MapSettings.Directions, MapSettings.MapWidth, MapSettings.MapHeight);
+            List<AStarNode> aStarNodes = FindPath(startNode, targetNode, _world.QuadTreeData.TileQuadtreeRoot, MapSettings.Directions, MapSettings.MapWidth, MapSettings.MapHeight);
 
             if (aStarNodes == null)
             {
@@ -160,10 +160,7 @@ namespace Game.ECS.Systems
                 if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
                 {
                     int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                       _world.quadTreeNodeDatas,
-                                                       _world.QuadtreeNodeIndexes,
-                                                       _world.QuadtreeLeafIndexes,
-                                                       _world.TileQuadtreeRoot,
+                                                       _world.QuadTreeData,
                                                        checkCoordinate);
 
                     var coordinateComp = _world.GetComponent<CoordinateComponent>(tileId);

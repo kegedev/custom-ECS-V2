@@ -1,12 +1,9 @@
-using Game.ECS.Base.Components;
 using Game.ECS.Base;
+using Game.ECS.Base.Components;
 using Game.ECS.Base.Systems;
 using Game.Factory;
 using System;
 using UnityEngine;
-using Unity.Collections;
-using Unity.Mathematics;
-using UnityEngine.LightTransport;
 
 
 namespace Game.ECS.Systems
@@ -26,16 +23,16 @@ namespace Game.ECS.Systems
         {
             world = systemManager.GetWorld();
 
-           // CreateBuildings(eCSWorld);
+            // CreateBuildings(eCSWorld);
         }
 
         public void CreateBuilding(BuildingType buildingType, int rootTileId)
         {
-         
+
             int newEntityID = world.CreateNewEntity();
 
-            var rootTileCoord=world.GetComponent<CoordinateComponent>(rootTileId);
-     
+            var rootTileCoord = world.GetComponent<CoordinateComponent>(rootTileId);
+
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(rootTileCoord.Coordinate);
 
             world.AddComponentToEntity<CoordinateComponent>(newEntityID,
@@ -58,16 +55,13 @@ namespace Game.ECS.Systems
                     if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
                         continue;
                     int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                         world.quadTreeNodeDatas,
-                                                         world.QuadtreeNodeIndexes,
-                                                         world.QuadtreeLeafIndexes,
-                                                         world.TileQuadtreeRoot,
+                                                         world.QuadTreeData,
                                                          new Vector2(pcAbsoluteX, pcAbsoluteY));
 
                     var renderComp = world.GetComponent<RenderComponent>(tileId);
                     var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
-                       
-                    
+
+
                     renderComp.TextureOffset = MapConstants.BuildingOffsets[buildingType];
                     world.UpdateComponent(tileId, renderComp);
                     SetOccupant.Invoke(coordinateComp, newEntityID);

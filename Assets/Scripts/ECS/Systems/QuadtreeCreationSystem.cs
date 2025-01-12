@@ -18,7 +18,7 @@ public class QuadtreeCreationSystem : IInitSystem
         _world = systemManager.GetWorld();
         //_world.TileQuadtreeRoot = CreateQuadtreeChunkFromChunks(_world, _world.GetChunksByMask(ComponentMask.CoordinateComponent | ComponentMask.TileComponent));
 
-        _world.TileQuadtreeRoot = CreateQuadTree(((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)]).Components, 128, 128, 1);
+        _world.QuadTreeData.TileQuadtreeRoot = CreateQuadTree(_world.GetComponentContainer<QuadTreeLeafComponent>().Components, 128, 128, 1);
 
     }
 
@@ -39,24 +39,24 @@ public class QuadtreeCreationSystem : IInitSystem
 
             InsertLeaf(0, quadTreeLeafComponents, quadTreeLeafComponents[i].LeafID);
         }
-        return _world.quadTreeNodeDatas[0];
+        return _world.QuadTreeData.QuadTreeNodeDatas[0];
     }
 
 
     private void InsertLeaf(int rootIndex, NativeArray<QuadTreeLeafComponent> quadTreeLeafComponents, int leafId)
     {
 
-        QuadTreeNodeData rootNode = _world.quadTreeNodeDatas[rootIndex];
+        QuadTreeNodeData rootNode = _world.QuadTreeData.QuadTreeNodeDatas[rootIndex];
 
         if (rootNode.IsDivided)
         {
 
             for (int i = 0; i < 4; i++)
             {
-                if (IsLeafInNode(_world.quadTreeNodeDatas[_world.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafId]))
+                if (IsLeafInNode(_world.QuadTreeData.QuadTreeNodeDatas[_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafId]))
                 {
-                    InsertLeaf(_world.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafId);
-                    _world.quadTreeNodeDatas[rootIndex] = rootNode;
+                    InsertLeaf(_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafId);
+                    _world.QuadTreeData.QuadTreeNodeDatas[rootIndex] = rootNode;
                     return;
                 }
             }
@@ -71,39 +71,39 @@ public class QuadtreeCreationSystem : IInitSystem
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        int leafIndexValue = _world.QuadtreeLeafIndexes[rootNode.LeavesStart + k];
+                        int leafIndexValue = _world.QuadTreeData.QuadtreeLeafIndexes[rootNode.LeavesStart + k];
 
-                        if (IsLeafInNode(_world.quadTreeNodeDatas[_world.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafIndexValue]))
+                        if (IsLeafInNode(_world.QuadTreeData.QuadTreeNodeDatas[_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafIndexValue]))
                         {
-                            _world.quadTreeNodeDatas[rootIndex] = rootNode;
-                            InsertLeaf(_world.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafIndexValue);
+                            _world.QuadTreeData.QuadTreeNodeDatas[rootIndex] = rootNode;
+                            InsertLeaf(_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafIndexValue);
                         }
                     }
                 }
                 for (int i = 0; i < 4; i++)
                 {
 
-                    if (IsLeafInNode(_world.quadTreeNodeDatas[_world.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafId]))
+                    if (IsLeafInNode(_world.QuadTreeData.QuadTreeNodeDatas[_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i]], quadTreeLeafComponents[leafId]))
                     {
-                        _world.quadTreeNodeDatas[rootIndex] = rootNode;
-                        InsertLeaf(_world.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafId);
+                        _world.QuadTreeData.QuadTreeNodeDatas[rootIndex] = rootNode;
+                        InsertLeaf(_world.QuadTreeData.QuadtreeNodeIndexes[rootNode.NodesStart + i], quadTreeLeafComponents, leafId);
                     }
                 }
 
                 for (int i = 0; i < rootNode.Capacity; i++)
                 {
-                    _world.QuadtreeLeafIndexes[rootNode.LeavesStart + i] = -1;
+                    _world.QuadTreeData.QuadtreeLeafIndexes[rootNode.LeavesStart + i] = -1;
                 }
             }
             else
             {
-                _world.QuadtreeLeafIndexes[rootNode.LeavesStart + rootNode.LeafCount] = leafId;
+                _world.QuadTreeData.QuadtreeLeafIndexes[rootNode.LeavesStart + rootNode.LeafCount] = leafId;
 
                 rootNode.LeafCount++;
 
             }
         }
-        _world.quadTreeNodeDatas[rootIndex] = rootNode;
+        _world.QuadTreeData.QuadTreeNodeDatas[rootIndex] = rootNode;
     }
 
     private bool IsLeafInNode(QuadTreeNodeData node, QuadTreeLeafComponent leaf)
@@ -125,7 +125,7 @@ public class QuadtreeCreationSystem : IInitSystem
 
         for (int i = 0; i < 4; i++)
         {
-            _world.QuadtreeNodeIndexes[node.NodesStart + i] = _world.quadTreeNodeDatas.Length - 4 + i;
+            _world.QuadTreeData.QuadtreeNodeIndexes[node.NodesStart + i] = _world.QuadTreeData.QuadTreeNodeDatas.Length - 4 + i;
 
         }
 
@@ -154,16 +154,16 @@ public class QuadtreeCreationSystem : IInitSystem
             Rect = rect,
             Capacity = 4,
             IsDivided = false,
-            NodesStart = _world.QuadtreeNodeIndexes.Length,
-            LeavesStart = _world.QuadtreeLeafIndexes.Length
+            NodesStart = _world.QuadTreeData.QuadtreeNodeIndexes.Length,
+            LeavesStart = _world.QuadTreeData.QuadtreeLeafIndexes.Length
         };
 
-        _world.quadTreeNodeDatas.Add(nodeData);
-        _world.quadtreeNodeIndex++;
+        _world.QuadTreeData.QuadTreeNodeDatas.Add(nodeData);
+        _world.QuadTreeData.QuadtreeNodeIndex++;
         for (int i = 0; i < nodeData.Capacity; i++)
         {
-            _world.QuadtreeNodeIndexes.Add(-1);
-            _world.QuadtreeLeafIndexes.Add(-1);
+            _world.QuadTreeData.QuadtreeNodeIndexes.Add(-1);
+            _world.QuadTreeData.QuadtreeLeafIndexes.Add(-1);
         }
 
     }

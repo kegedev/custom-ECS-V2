@@ -61,10 +61,7 @@ namespace Game.ECS.Systems
       
 
             int selectedTileId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                       _world.quadTreeNodeDatas,
-                                       _world.QuadtreeNodeIndexes,
-                                       _world.QuadtreeLeafIndexes,
-                                       _world.TileQuadtreeRoot,
+                                       _world.QuadTreeData,
                                        intersection);
             ProcessSelection.Invoke(selectedTileId, gameState);
         }

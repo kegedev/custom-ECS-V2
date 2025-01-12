@@ -13,6 +13,17 @@ public struct QuadTreeNodeData
 
 }
 
+public struct QuadTreeData
+{
+    public NativeList<QuadTreeNodeData> QuadTreeNodeDatas;
+    public NativeList<int> QuadtreeNodeIndexes;
+    public NativeList<int> QuadtreeLeafIndexes;
+    public int QuadtreeNodeIndex;
+    public QuadTreeNodeData TileQuadtreeRoot;
+}
+
+
+
 
 
 

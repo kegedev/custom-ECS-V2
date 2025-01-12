@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using Unity.Collections;
-using Game.ECS.Base.Components;
-using Game.Factory.Base;
-using Game.Pool;
-using System.ComponentModel;
+﻿using Game.ECS.Base.Components;
 using System;
-using UnityEngine.LightTransport;
-using UnityEngine;
+using System.Collections.Generic;
+using Unity.Collections;
 
 namespace Game.ECS.Base
 {
@@ -17,19 +12,22 @@ namespace Game.ECS.Base
         public NativeArray<int> Entities; //tüm entitylerin IDleri
         public Dictionary<Type, object> ComponentContainers; //<componentMask,ComponentContainer>
 
+        public QuadTreeData QuadTreeData = new QuadTreeData()
+        {
+            QuadTreeNodeDatas = new NativeList<QuadTreeNodeData>(Allocator.Persistent),
+            QuadtreeNodeIndexes = new NativeList<int>(Allocator.Persistent),
+            QuadtreeLeafIndexes = new NativeList<int>(Allocator.Persistent),
+            QuadtreeNodeIndex = 0,
+        };
         //quadtree structuna cek burayı
-        public NativeList<QuadTreeNodeData> quadTreeNodeDatas = new NativeList<QuadTreeNodeData>(Allocator.Persistent);
-        public NativeList<int> QuadtreeNodeIndexes = new NativeList<int>(Allocator.Persistent);
-        public NativeList<int> QuadtreeLeafIndexes = new NativeList<int>(Allocator.Persistent);
-        public int quadtreeNodeIndex = 0;
-        public QuadTreeNodeData TileQuadtreeRoot;
 
 
 
-        public ECSWorld(int initialEntityCount) 
+
+        public ECSWorld(int initialEntityCount)
         {
             Entities = new NativeArray<int>(initialEntityCount, Allocator.Persistent);
-            ComponentContainers= new Dictionary<Type, object>();
+            ComponentContainers = new Dictionary<Type, object>();
         }
 
         public void AddComponentToEntity<T>(int entityId, object component) where T : struct
@@ -53,7 +51,7 @@ namespace Game.ECS.Base
                 ComponentContainers.Add(typeof(T), componentContainer);
             }
 
-           return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
+            return ((ComponentContainer<T>)componentContainer).GetComponent(entityId);
         }
         public int CreateNewEntity()
         {
@@ -80,10 +78,10 @@ namespace Game.ECS.Base
 
                     foreach (var componentContainer in ComponentContainers.Values)
                     {
-                        
+
                         if (componentContainer is ComponentContainer<CoordinateComponent> positionContainer)
                         {
-                           // ComponentContainerUtility.RemoveComponent(ref positionContainer, entityId);
+                            // ComponentContainerUtility.RemoveComponent(ref positionContainer, entityId);
                         }
 
                         else
@@ -153,11 +151,11 @@ namespace Game.ECS.Base
             }
         }
 
-        public void UpdateComponent<T>(int entityId,T component) where T : struct
+        public void UpdateComponent<T>(int entityId, T component) where T : struct
         {
             if (ComponentContainers.ContainsKey(typeof(T)))
             {
-                 ((ComponentContainer<T>)ComponentContainers[typeof(T)]).UpdateComponent(entityId, component);
+                ((ComponentContainer<T>)ComponentContainers[typeof(T)]).UpdateComponent(entityId, component);
             }
             else
             {
@@ -174,7 +172,7 @@ namespace Game.ECS.Base
         {
             if (ComponentContainers.ContainsKey(typeof(T)))
             {
-               return ((ComponentContainer<T>)ComponentContainers[typeof(T)]).HasComponent(entityId);
+                return ((ComponentContainer<T>)ComponentContainers[typeof(T)]).HasComponent(entityId);
             }
             else
             {

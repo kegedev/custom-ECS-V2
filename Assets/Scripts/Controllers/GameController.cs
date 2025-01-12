@@ -6,66 +6,59 @@ using Game.Pool;
 using Game.ECS.Systems;
 using Game.ECS.Base.Components;
 
-public class GameController: MonoBehaviour
+public class GameController : MonoBehaviour
 {
     private ECSWorld _gameWorld;
-    private ECSWorld _UIWorld;
+    private ECSWorld _uiWorld;
     private SystemManager _systemManager;
-    [SerializeField] UIManager _uiManager;
+    [SerializeField] private UIManager _uiManager;
     [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
-    void Start()
+
+    private void Start()
     {
+        InitializeGame();
+        RegisterSharedData();
+        SetupSystems();
+    }
 
-        MapSettings.Initialize(128,128,1,8);
+    private void Update()
+    {
+        _systemManager.UpdateSystems();
+    }
 
+    private void InitializeGame()
+    {
+        MapSettings.Initialize(128, 128, 1, 8);
         _gameWorld = new ECSWorld(256);
         _systemManager = new SystemManager(_gameWorld);
-        PoolManager poolManager = new PoolManager();
-        FactoryManager factoryManager = new FactoryManager(poolManager);
+    }
+
+    private void RegisterSharedData()
+    {
+        _systemManager.AddSharedData(new MeshContainer { Meshes = new Mesh[] { _mesh } });
+        _systemManager.AddSharedData(new MaterialContainer { Materials = new Material[] { _material } });
+    }
+
+    private void SetupSystems()
+    {
+        var poolManager = new PoolManager();
+        var factoryManager = new FactoryManager(poolManager);
 
 
-        // _systemManager.AddSystem(new AssetLoadingSystem());
-        _systemManager.AddSharedData(new MeshContainer()
-        {
-            Meshes = new Mesh[] { _mesh }
-        });
-        _systemManager.AddSharedData(new MaterialContainer()
-        {
-            Materials = new Material[] { _material }
-        });
+        var occupancySystem = new OccupancySystem();
+        var moverCreationSystem = new MoverCreationSystem(factoryManager);
+        var buildingCreationSystem = new BuildingCreationSystem(factoryManager);
+        var inputSystem = new InputSystem(_camera);
+        var selectionSystem = new SelectionSystem();
+        var aStarSystem = new AStarSystem();
+        var movementSystem = new MovementSystem();
+        var constructSystem = new ConstructSystem();
 
-        OccupancySystem occupancySystem = new OccupancySystem();
-        MoverCreationSystem moverCreationSystem = new MoverCreationSystem(factoryManager);
-        moverCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
-        moverCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
 
-        BuildingCreationSystem buildingCreationSystem = new BuildingCreationSystem(factoryManager);
-        buildingCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
-        buildingCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+        ConfigureSystemEventHandlers(occupancySystem, moverCreationSystem, buildingCreationSystem, inputSystem, selectionSystem, aStarSystem, movementSystem, constructSystem);
 
-        InputSystem inputSystem = new InputSystem(_camera);
-        SelectionSystem selectionSystem = new SelectionSystem();
-        inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
-
-        AStarSystem aStarSystem= new AStarSystem();
-        selectionSystem.GetMoverPath += aStarSystem.GetMoverPath;
-
-        MovementSystem movementSystem = new MovementSystem();
-        movementSystem.SetTileOccupant += occupancySystem.SetTileOccupant;
-
-        ConstructSystem constructSystem = new ConstructSystem();
-        constructSystem.GetInputPos += inputSystem.GetInputPosition;
-        _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
-        constructSystem.SetGameState += _systemManager.UpdateGameState;
-        constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
-        selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
-        selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
-        selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
-
-        _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
-        moverCreationSystem.GetSelectedBuildingId += selectionSystem.GetSelectedBuildingId;
 
         _systemManager.AddSystem(occupancySystem);
         _systemManager.AddSystem(new TileCreationSystem(factoryManager));
@@ -79,17 +72,48 @@ public class GameController: MonoBehaviour
         _systemManager.AddSystem(buildingCreationSystem);
         _systemManager.AddSystem(constructSystem);
         _systemManager.AddSystem(new AttackSystem());
+
         _systemManager.InitSystems();
-
-
-
-  
     }
 
-    private void Update()
+    private void ConfigureSystemEventHandlers(
+        OccupancySystem occupancySystem,
+        MoverCreationSystem moverCreationSystem,
+        BuildingCreationSystem buildingCreationSystem,
+        InputSystem inputSystem,
+        SelectionSystem selectionSystem,
+        AStarSystem aStarSystem,
+        MovementSystem movementSystem,
+        ConstructSystem constructSystem)
     {
-        _systemManager.UpdateSystems();
+        // MoverCreationSystem
+        moverCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
+        moverCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+        moverCreationSystem.GetSelectedBuildingId += selectionSystem.GetSelectedBuildingId;
+
+        // BuildingCreationSystem
+        buildingCreationSystem.SetOccupant += occupancySystem.SetTileOccupant;
+        buildingCreationSystem.GetOccupant += occupancySystem.GetTileOccupant;
+
+        // InputSystem
+        inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
+
+        // SelectionSystem
+        selectionSystem.GetMoverPath += aStarSystem.GetMoverPath;
+        selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
+        selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
+        selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
+
+        // MovementSystem
+        movementSystem.SetTileOccupant += occupancySystem.SetTileOccupant;
+
+        // ConstructSystem
+        constructSystem.GetInputPos += inputSystem.GetInputPosition;
+        constructSystem.SetGameState += _systemManager.UpdateGameState;
+        constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
+        _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
+
+        // UIManager
+        _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
     }
-
-
 }

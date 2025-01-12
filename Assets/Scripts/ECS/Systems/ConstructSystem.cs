@@ -2,14 +2,9 @@ using Game.ECS.Base;
 using Game.ECS.Base.Components;
 using Game.ECS.Base.Systems;
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using UnityEngine.LightTransport;
-using Unity.Collections;
-using static UnityEditor.Progress;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 namespace Game.ECS.Systems
 {
@@ -17,37 +12,34 @@ namespace Game.ECS.Systems
     {
         ECSWorld world;
         public Func<Vector2> GetInputPos;
-        int currentTileId=-1;
+        int currentTileId = -1;
         private List<int> _previewTileIds;
         private List<float2> _previousOffsets;
-        private BuildingType _buildingType=BuildingType.None;
+        private BuildingType _buildingType = BuildingType.None;
 
         public Action<GameState> SetGameState;
-        public Action<BuildingType,int> ConstructBuilding;
+        public Action<BuildingType, int> ConstructBuilding;
         public ushort ActiveStateMask => (ushort)GameState.Construction;
         bool isAreF = false;
         public void Init(SystemManager systemManager)
         {
-            world=systemManager.GetWorld();
+            world = systemManager.GetWorld();
             _previewTileIds = new List<int>();
-            _previousOffsets=new List<float2>();
-            
+            _previousOffsets = new List<float2>();
+
         }
 
         public void Update(SystemManager systemManager)
         {
-          
-            ECSWorld world=systemManager.GetWorld();
-            int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                    world.quadTreeNodeDatas,
-                                    world.QuadtreeNodeIndexes,
-                                    world.QuadtreeLeafIndexes,
-                                    world.TileQuadtreeRoot,
-                                    GetInputPos.Invoke());
 
-            if(tileEntityId!= currentTileId)
+            ECSWorld world = systemManager.GetWorld();
+            int tileEntityId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                       world.QuadTreeData,
+                                                       GetInputPos.Invoke());
+
+            if (tileEntityId != currentTileId)
             {
-                if(currentTileId!=-1) ClearPreview(systemManager.GetWorld());
+                if (currentTileId != -1) ClearPreview(systemManager.GetWorld());
                 currentTileId = tileEntityId;
                 isAreF = CheckContructionArea(world);
                 ShowPreview(world, isAreF);
@@ -55,18 +47,17 @@ namespace Game.ECS.Systems
 
             }
 
-       
+
         }
 
         public void TryToConstruct()
         {
-            if(isAreF)
+            if (isAreF)
             {
                 SetGameState.Invoke(GameState.MainState);
                 if (currentTileId != -1) ClearPreview(world);
                 _previousOffsets.Clear();
                 _previewTileIds.Clear();
-                Debug.Log(_buildingType);
                 ConstructBuilding.Invoke(_buildingType, currentTileId);
             }
         }
@@ -86,18 +77,15 @@ namespace Game.ECS.Systems
                     if (pcAbsoluteX >= MapSettings.MapWidth || pcAbsoluteY >= MapSettings.MapHeight)
                         return false;
                     int tileId = QuerySystem.GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                   world.quadTreeNodeDatas,
-                                                   world.QuadtreeNodeIndexes,
-                                                   world.QuadtreeLeafIndexes,
-                                                   world.TileQuadtreeRoot,
+                                                   world.QuadTreeData,
                                                    new Vector2(pcAbsoluteX, pcAbsoluteY));
 
                     var renderComp = world.GetComponent<RenderComponent>(tileId);
                     var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
                     var tileComp = world.GetComponent<TileComponent>(tileId);
                     _previewTileIds.Add(tileId);
-                    _previousOffsets.Add( renderComp.TextureOffset);
-                    if (tileComp.OccupantEntityID!=-1) isAreafree = false;
+                    _previousOffsets.Add(renderComp.TextureOffset);
+                    if (tileComp.OccupantEntityID != -1) isAreafree = false;
                     renderComp.TextureOffset = new float2(0.5f, 0.5f);
                     world.UpdateComponent(tileId, renderComp);
                 }
@@ -109,8 +97,8 @@ namespace Game.ECS.Systems
         {
             foreach (var previewTileId in _previewTileIds)
             {
-             var renderComp=world.GetComponent<RenderComponent>(previewTileId);
-                renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree? _buildingType : BuildingType.PreviewRed];
+                var renderComp = world.GetComponent<RenderComponent>(previewTileId);
+                renderComp.TextureOffset = MapConstants.BuildingOffsets[isAreaFree ? _buildingType : BuildingType.PreviewRed];
                 world.UpdateComponent(previewTileId, renderComp);
             }
         }
@@ -119,7 +107,7 @@ namespace Game.ECS.Systems
             for (int i = 0; i < _previewTileIds.Count; i++)
             {
                 var renderComp = world.GetComponent<RenderComponent>(_previewTileIds[i]);
-            
+
                 renderComp.TextureOffset = _previousOffsets[i];
                 world.UpdateComponent(_previewTileIds[i], renderComp);
             }
@@ -128,7 +116,7 @@ namespace Game.ECS.Systems
         }
         public void BuildingSelectedToConstruct(BuildingType buildingType)
         {
-            _buildingType=buildingType;
+            _buildingType = buildingType;
             SetGameState.Invoke(GameState.Construction);
         }
     }

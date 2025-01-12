@@ -21,10 +21,7 @@ namespace Game.ECS.Systems
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
             int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                       _world.quadTreeNodeDatas,
-                                       _world.QuadtreeNodeIndexes,
-                                       _world.QuadtreeLeafIndexes,
-                                       _world.TileQuadtreeRoot,
+                                       _world.QuadTreeData,
                                        pos);
 
             ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];
@@ -41,10 +38,7 @@ namespace Game.ECS.Systems
             Vector2 pos = new Vector2(coordinateComponent.Coordinate.x, coordinateComponent.Coordinate.y);
 
             int tileEntityId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
-                                       _world.quadTreeNodeDatas,
-                                       _world.QuadtreeNodeIndexes,
-                                       _world.QuadtreeLeafIndexes,
-                                       _world.TileQuadtreeRoot,
+                                       _world.QuadTreeData,
                                        pos);
 
             ComponentContainer<TileComponent> componentContainer = (ComponentContainer<TileComponent>)_world.ComponentContainers[typeof(TileComponent)];

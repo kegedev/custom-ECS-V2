@@ -27,9 +27,9 @@ namespace Game.ECS.Systems
         {
             int selectedBuildingId = GetSelectedBuildingId.Invoke();
             var buildingRootCoordinateComponent = _world.GetComponent<CoordinateComponent>(selectedBuildingId);
-            int soldierSpawnTileId=QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, buildingRootCoordinateComponent.Coordinate,5,5);
+            int soldierSpawnTileId=QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, buildingRootCoordinateComponent.Coordinate, MapConstants.BuildingSize.x, MapConstants.BuildingSize.y);
             var spawnCoordinateComponent = _world.GetComponent<CoordinateComponent>(soldierSpawnTileId);
-            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(spawnCoordinateComponent.Coordinate.x, spawnCoordinateComponent.Coordinate.y, 0), Quaternion.identity, Vector3.one * 0.95f);
+            Matrix4x4 matrix = Matrix4x4.TRS(new Vector3(spawnCoordinateComponent.Coordinate.x, spawnCoordinateComponent.Coordinate.y, 0), Quaternion.identity, Vector3.one );
             int newEntityID = _world.CreateNewEntity();
 
             CoordinateComponent coordinateComponent = _factoryManager.GetInstance<CoordinateComponent>(spawnCoordinateComponent.Coordinate);

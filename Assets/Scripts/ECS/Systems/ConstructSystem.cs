@@ -67,9 +67,9 @@ namespace Game.ECS.Systems
             bool isAreafree = true;
 
             int2 coordinate = world.GetComponent<CoordinateComponent>(currentTileId).Coordinate;
-            for (int w = 0; w < 5; w++)
+            for (int w = 0; w < MapConstants.BuildingSize.x; w++)
             {
-                for (int h = 0; h < 5; h++)
+                for (int h = 0; h < MapConstants.BuildingSize.y; h++)
                 {
                     int pcAbsoluteX = coordinate.x + w;
                     int pcAbsoluteY = coordinate.y + h;

@@ -16,7 +16,7 @@ internal static class QuerySystem
     {
         if (!quadTreeData.TileQuadtreeRoot.Rect.Contains(point))
         {
-            Debug.LogError("Point is out of bounds of the root node. "+ point);
+            Debug.LogError("OUT OF MAP "+ point);
             return -1;
         }
 
@@ -128,15 +128,16 @@ internal static class QuerySystem
             if (coordinateOfNeigh.x != -1) neighbors.Add(coordinateOfNeigh);
         }
 
-
+        if (neighbors == null || neighbors.Count == 0) Debug.LogError("No Empty Neighbour of Building");
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
+       
         return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                              world.QuadTreeData,
                                                              new float2(cn.x, cn.y));
 
     }
 
-    public static int2 FindClosestCoordinate(int2 target, List<int2> int2List)//dogru calismiyor bir bak
+    public static int2 FindClosestCoordinate(int2 target, List<int2> int2List)
     {
         if (int2List == null || int2List.Count == 0)
         {
@@ -155,7 +156,7 @@ internal static class QuerySystem
                 minDistanceSquared = distanceSquared;
             }
         }
-
+        
         return closest;
     }
 

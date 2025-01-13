@@ -35,7 +35,7 @@ namespace Game.ECS.Systems
             _world.AddComponentToEntity<CoordinateComponent>(newEntityID,
                                                             coordinateComponent);
             _world.AddComponentToEntity<AreaComponent>(newEntityID,
-                                                          _factoryManager.GetInstance<AreaComponent>(new object[] { 5, 5 }));
+                                                          _factoryManager.GetInstance<AreaComponent>(new object[] { MapConstants.BuildingSize.x, MapConstants.BuildingSize.y }));
             _world.AddComponentToEntity<BuildingComponent>(newEntityID,
                                                           _factoryManager.GetInstance<BuildingComponent>(new object[] { buildingType }));
             _world.AddComponentToEntity<HealthComponent>(newEntityID,

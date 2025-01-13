@@ -4,7 +4,7 @@ using System;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class AreaSystem : MonoBehaviour
+public class AreaSystem
 {
 
     private ECSWorld _world;
@@ -18,9 +18,9 @@ public class AreaSystem : MonoBehaviour
 
     public void CreateArea(int entityId,int2 rootTileCoord,BuildingType buildingType)
     {
-        for (int w = 0; w < 5; w++)
+        for (int w = 0; w < MapConstants.BuildingSize.x; w++)
         {
-            for (int h = 0; h < 5; h++)
+            for (int h = 0; h < MapConstants.BuildingSize.y; h++)
             {
                 int pcAbsoluteX = rootTileCoord.x + w;
                 int pcAbsoluteY = rootTileCoord.y + h;

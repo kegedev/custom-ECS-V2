@@ -62,12 +62,12 @@ namespace Game.ECS.Systems
         {
             int occupantEntityId = _world.GetComponent<TileComponent>(selectedTileId).OccupantEntityID;
             int2 selectedTileCoordinate = _world.GetComponent<CoordinateComponent>(selectedTileId).Coordinate;
-
+            if (SelectedMoverID == -1) return;
             if (_world.HasComponentContainer<MoverComponent>() && _world.HasComponent<MoverComponent>(occupantEntityId))
             {
-                if (SelectedMoverID != -1)
+                if (occupantEntityId != SelectedMoverID)
                 {
-                  
+
                     int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
 
                     ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
@@ -76,7 +76,8 @@ namespace Game.ECS.Systems
                     SetMoverPath.Invoke(closestFreeNeighbour, SelectedMoverID);
                     ResetSelectedMoverIndex();
                 }
-            }else if (SelectedMoverID != -1 && occupantEntityId != -1)
+            }
+            else if ( occupantEntityId != -1)
             {
                 //Debug.Log("MOVE  TO BUILDING");
                 ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
@@ -86,16 +87,17 @@ namespace Game.ECS.Systems
                 attackComponent.TargetId = tileComponent.OccupantEntityID;
                 //_world.UpdateComponent(SelectedMoverID, attackComponent);
 
-                int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
+                int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, MapConstants.BuildingSize.x, MapConstants.BuildingSize.y);
                 SetMoverPath.Invoke(closestFreeNeighbour, SelectedMoverID);
                 ResetSelectedMoverIndex();
             }
-            else if (SelectedMoverID != -1)
+            else 
             {
                 // Debug.Log("Tile has no occupant");
                 SetMoverPath.Invoke(selectedTileId, SelectedMoverID);
                 ResetSelectedMoverIndex();
             }
+
 
         }
 

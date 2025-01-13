@@ -44,5 +44,7 @@ public static class MapConstants
         { BuildingType.PowerPlant, 50 },
     };
 
+    public static readonly int2 BuildingSize = new int2(4,4);
+
 
 }

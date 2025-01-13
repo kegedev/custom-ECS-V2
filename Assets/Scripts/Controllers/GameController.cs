@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     private ECSWorld _gameWorld;
     private ECSWorld _uiWorld;
     private SystemManager _systemManager;
-    [SerializeField] private UIManager _uiManager;
+    [SerializeField] private UIController _uiController;
     [SerializeField] private Camera _camera;
     [SerializeField] private Mesh _mesh;
     [SerializeField] private Material _material;
@@ -58,6 +58,7 @@ public class GameController : MonoBehaviour
         var movementSystem = new MovementSystem(_gameWorld);
         var constructSystem = new ConstructSystem(_gameWorld);
         var areaSystem=new AreaSystem(_gameWorld);
+        //var uIController = new UIController(_uiManager);
 
         ConfigureSystemEventHandlers(occupancySystem, 
                                      moverCreationSystem, 
@@ -67,7 +68,8 @@ public class GameController : MonoBehaviour
                                      aStarSystem, 
                                      movementSystem, 
                                      constructSystem,
-                                     areaSystem);
+                                     areaSystem
+                                     );//uIController
 
         _systemManager.AddSystem(new TileCreationSystem(_factoryManager));
         _systemManager.AddSystem(new RenderSystem());
@@ -106,8 +108,8 @@ public class GameController : MonoBehaviour
         // SelectionSystem
         selectionSystem.SetMoverPath += movementSystem.SetMoverPath;
         selectionSystem.TryToConstruct += constructSystem.TryToConstruct;
-        selectionSystem.BuildingSelected += _uiManager.ShowSelectedBuilding;
-        selectionSystem.SoldierSelected += _uiManager.ShowSelectedSoldier;
+        selectionSystem.BuildingSelected += _uiController.OnBuildingSelected;
+        selectionSystem.SoldierSelected += _uiController.OnSoldierSelected;
 
         // MovementSystem
         movementSystem.GetMoverPath += aStarSystem.GetMoverPath;
@@ -118,14 +120,14 @@ public class GameController : MonoBehaviour
         constructSystem.SetGameState += _systemManager.UpdateGameState;
         constructSystem.SetGameState += movementSystem.UpdateGameState;
         constructSystem.ConstructBuilding += buildingCreationSystem.CreateBuilding;
-        _uiManager.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
 
         //AreaSystem
         areaSystem.SetOccupant += occupancySystem.SetTileOccupant;
         areaSystem.GetOccupant += occupancySystem.GetTileOccupant;
 
         // UIManager
-        _uiManager.SpawnSoldier += moverCreationSystem.CreateMover;
+        _uiController.SpawnSoldier += moverCreationSystem.CreateMover;
+        _uiController.ConstructBuilding += constructSystem.BuildingSelectedToConstruct;
 
         //world
         _gameWorld.DisposeArea += buildingCreationSystem.DisposeArea;

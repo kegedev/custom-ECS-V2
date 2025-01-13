@@ -6,7 +6,6 @@ using System.Drawing;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 namespace Game.ECS.Systems
 {

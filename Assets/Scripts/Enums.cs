@@ -48,3 +48,5 @@ public enum GameState:ushort
     MainState=1<<0,
     Construction = 1 << 1,
 }
+
+

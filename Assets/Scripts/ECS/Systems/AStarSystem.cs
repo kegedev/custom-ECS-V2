@@ -24,8 +24,7 @@ namespace Game.ECS.Systems
 
         public NativeArray<int2> GetMoverPath(int moverIndex, int2 startcoord, int2 tagretCoordinate)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+          
             AStarNode startNode = new AStarNode()
             {
                 MoverIndex = moverIndex,
@@ -48,9 +47,7 @@ namespace Game.ECS.Systems
             {
                 path[i] = aStarNodes[i].Coordinate;
             }
-            stopwatch.Stop();
-            UnityEngine.Debug.Log($"GetMoverPath took {stopwatch.ElapsedMilliseconds} ms");
-
+         
             return path;
         }
 

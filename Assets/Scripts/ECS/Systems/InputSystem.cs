@@ -20,6 +20,7 @@ namespace Game.ECS.Systems
 
 
         public Action<int,GameState> ProcessSelection;
+        public Action<int,GameState> ProcessAction;
 
         public ushort ActiveStateMask => (ushort)(GameState.Construction | GameState.MainState);
 
@@ -43,12 +44,16 @@ namespace Game.ECS.Systems
             if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
             {
 
-                GetClickPositionOnXYPlane(Input.mousePosition,systemManager.GetState());
+                GetClickPositionOnXYPlane(Input.mousePosition,systemManager.GetState(),false);
+            }else if(Input.GetMouseButtonUp(1) && !EventSystem.current.IsPointerOverGameObject())
+            {
+                GetClickPositionOnXYPlane(Input.mousePosition, systemManager.GetState(), true);
             }
+
         }
 
 
-        public void GetClickPositionOnXYPlane(Vector3 screenPosition, GameState gameState)
+        public void GetClickPositionOnXYPlane(Vector3 screenPosition, GameState gameState, bool isRightClick)
         {
 
             Vector3 worldPosition = _camera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
@@ -60,7 +65,8 @@ namespace Game.ECS.Systems
             int selectedTileId = QuerySystem.GetEntityId((ComponentContainer<QuadTreeLeafComponent>)_world.ComponentContainers[typeof(QuadTreeLeafComponent)],
                                        _world.QuadTreeData,
                                        intersection);
-            ProcessSelection.Invoke(selectedTileId, gameState);
+           if(!isRightClick) ProcessSelection.Invoke(selectedTileId, gameState);
+           else ProcessAction.Invoke(selectedTileId, gameState);
         }
 
         public Vector2 GetInputPosition()

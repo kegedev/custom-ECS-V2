@@ -104,6 +104,7 @@ public class GameController : MonoBehaviour
 
         // InputSystem
         inputSystem.ProcessSelection += selectionSystem.ProcessSelection;
+        inputSystem.ProcessAction += selectionSystem.ProcessAction;
 
         // SelectionSystem
         selectionSystem.SetMoverPath += movementSystem.SetMoverPath;

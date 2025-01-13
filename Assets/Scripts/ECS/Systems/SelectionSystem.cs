@@ -36,8 +36,7 @@ namespace Game.ECS.Systems
 
             if (_world.HasComponentContainer<MoverComponent>() && _world.HasComponent<MoverComponent>(occupantEntityId))
             {
-                if (SelectedMoverID == -1)
-                {
+                
                     SetSelectedMover(occupantEntityId);
 
                     ref var soldierComponent = ref _world.GetComponent<SoldierComponent>(SelectedMoverID);
@@ -45,21 +44,9 @@ namespace Game.ECS.Systems
                     ref var damageComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
 
                     SoldierSelected.Invoke((SoldierType)soldierComponent.SoldierType, healthComponent.Health, damageComponent.Damage);
-                }
-                else
-                {
-                    int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
-
-                    ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
-                    ref var tileComponent = ref _world.GetComponent<TileComponent>(selectedTileId);
-                    attackComponent.TargetId = tileComponent.OccupantEntityID;
-                    //_world.UpdateComponent(SelectedMoverID, attackComponent);
-                    SetMoverPath.Invoke( closestFreeNeighbour,SelectedMoverID);
-                    ResetSelectedMoverIndex();
-                    // SetMoverPath(closestFreeNeighbour);
-                }
+               
             }
-            else if (SelectedMoverID == -1 && occupantEntityId != -1)
+            else if (occupantEntityId != -1)
             {
                 SelectedBuildingID = occupantEntityId;
                 var buildingComponent = _world.GetComponent<BuildingComponent>(SelectedBuildingID);
@@ -68,7 +55,28 @@ namespace Game.ECS.Systems
                 BuildingSelected.Invoke((BuildingType)buildingComponent.BuildingType, healthComponent.Health);
                 // Debug.Log("BUILDING SELECTED");
             }
-            else if (SelectedMoverID != -1 && occupantEntityId != -1)
+         
+        }
+
+        public void ProcessAction(int selectedTileId, GameState gameState)
+        {
+            int occupantEntityId = _world.GetComponent<TileComponent>(selectedTileId).OccupantEntityID;
+            int2 selectedTileCoordinate = _world.GetComponent<CoordinateComponent>(selectedTileId).Coordinate;
+
+            if (_world.HasComponentContainer<MoverComponent>() && _world.HasComponent<MoverComponent>(occupantEntityId))
+            {
+                if (SelectedMoverID != -1)
+                {
+                  
+                    int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbour(selectedTileCoordinate, _world);
+
+                    ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
+                    ref var tileComponent = ref _world.GetComponent<TileComponent>(selectedTileId);
+                    attackComponent.TargetId = tileComponent.OccupantEntityID;
+                    SetMoverPath.Invoke(closestFreeNeighbour, SelectedMoverID);
+                    ResetSelectedMoverIndex();
+                }
+            }else if (SelectedMoverID != -1 && occupantEntityId != -1)
             {
                 //Debug.Log("MOVE  TO BUILDING");
                 ref var attackComponent = ref _world.GetComponent<AttackComponent>(SelectedMoverID);
@@ -79,22 +87,22 @@ namespace Game.ECS.Systems
                 //_world.UpdateComponent(SelectedMoverID, attackComponent);
 
                 int closestFreeNeighbour = QuerySystem.GetClosestUnoccupiedNeighbourOfArea(_world, selectedTileCoordinate, 5, 5);
-                SetMoverPath.Invoke( closestFreeNeighbour, SelectedMoverID);
+                SetMoverPath.Invoke(closestFreeNeighbour, SelectedMoverID);
                 ResetSelectedMoverIndex();
             }
             else if (SelectedMoverID != -1)
             {
                 // Debug.Log("Tile has no occupant");
-                SetMoverPath.Invoke( selectedTileId, SelectedMoverID);
+                SetMoverPath.Invoke(selectedTileId, SelectedMoverID);
                 ResetSelectedMoverIndex();
             }
 
         }
 
-        
 
 
-        
+
+
 
         public void SetSelectedMover(int selectedMoverIndex)
         {

@@ -331,8 +331,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: 0, y: 63.010666}
+  m_SizeDelta: {x: 200, y: 326.0212}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &191767757
 MonoBehaviour:
@@ -346,9 +346,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79c09e38f36d2b34ba8be2f84445ec2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonPrefab1: {fileID: 780067117008899294, guid: 9fcd4990fec9fd4448c377063dda487b, type: 3}
-  buttonPrefab2: {fileID: 8865032710475908832, guid: 593beba19f7b54c42acfbbb1ea4794b6, type: 3}
-  content: {fileID: 492322692}
+  content: {fileID: 1060951471}
   scrollRect: {fileID: 191767758}
 --- !u!114 &191767758
 MonoBehaviour:
@@ -363,13 +361,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 1060951471}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 1
-  m_Elasticity: 0.1
-  m_Inertia: 1
+  m_Elasticity: 0
+  m_Inertia: 0
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 0.3
   m_Viewport: {fileID: 492322692}
   m_HorizontalScrollbar: {fileID: 2015781915}
   m_VerticalScrollbar: {fileID: 2026369858}
@@ -2134,8 +2132,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

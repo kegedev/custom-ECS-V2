@@ -13,20 +13,20 @@ public class GameUI : MonoBehaviour
         [SerializeField] private GameObject _soldierButtonParent;
         
 
-        public void ShowSelectedBuilding(string buildingName, int health)
+        public void ShowSelectedBuilding(string buildingName, int health, bool showProductionMenu)
         {
-            ActivationSoldierButtons(true);
+            ActivationSoldierButtons(showProductionMenu);
             _selectedUnitDamage.text = "";
             _selectedUnitName.text = buildingName;
-            _selectedUnitHealth.text = health.ToString();
+            _selectedUnitHealth.text = "HP " + health.ToString();
         }
 
         public void ShowSelectedSoldier(string soldierName, int health, int damage)
         {
             ActivationSoldierButtons(false);
             _selectedUnitName.text = soldierName;
-            _selectedUnitHealth.text = health.ToString();
-            _selectedUnitDamage.text = damage.ToString();
+            _selectedUnitHealth.text = "HP " + health.ToString();
+            _selectedUnitDamage.text = "DMG " + damage.ToString();
         }
     
         public void ActivationSoldierButtons(bool isActive)

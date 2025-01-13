@@ -6,7 +6,6 @@ public class HealthComponentFactory : BaseFactory<HealthComponent>
 {
     protected override HealthComponent Create(params object[] arguments)
     {
-        Debug.Log("CREATE HEALTH COMPONENT");
         return new HealthComponent()
         {
             Health = (int)arguments[0],
@@ -15,7 +14,6 @@ public class HealthComponentFactory : BaseFactory<HealthComponent>
 
     protected override HealthComponent Update(ref HealthComponent component, params object[] arguments)
     {
-        Debug.Log("UPDATE HEALTH COMPONENT");
         component.Health = (int)arguments[0];
         return component;
     }

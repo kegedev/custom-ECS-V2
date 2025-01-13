@@ -29,6 +29,7 @@ public class UIController:MonoBehaviour
         _infiniteScrollView.GetScrollElement += OnGetScrollElement;
         _infiniteScrollView.GetBuildingButton += OnGetBuildingButton;
         CreateButtons();
+        _view.ActivationSoldierButtons(false);
     }
 
     private void RecycleButton(GameObject button)
@@ -129,7 +130,7 @@ public class UIController:MonoBehaviour
         string buildingName = buildingType == BuildingType.Barrack ? "BARRACK" : "POWER PLANT";
         Vector2 textureOffset = MapConstants.BuildingOffsets[buildingType];
         _selectedUnitImage.material.SetTextureOffset("_MainTex", textureOffset);
-        _view.ShowSelectedBuilding(buildingName, health);
+        _view.ShowSelectedBuilding(buildingName, health, buildingType == BuildingType.Barrack);
     }
 
     public void OnSoldierSelected(SoldierType soldierType, int health, int damage)

@@ -1,17 +1,14 @@
-﻿using Unity.Collections;
-using System;
-using System.Linq;
+﻿using System;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
-using System.Reflection;
-using UnityEngine;
 
 namespace Game.ECS.Base.Components
 {
     public class ComponentContainer<T> where T : struct
     {
-        public NativeArray<int> EntityIds;
-        public NativeArray<T> Components; 
-        public int EntityCount; 
+        public NativeArray<int> EntityIds;//TODO: Dispose nativeContainers
+        public NativeArray<T> Components;//TODO: Dispose nativeContainers
+        public int EntityCount;
 
         public ComponentContainer(int initialCapacity = 128)
         {
@@ -43,8 +40,8 @@ namespace Game.ECS.Base.Components
             }
             throw new Exception("Entity ID not found in the container " + entityId);
         }
-      
-        public bool HasComponent(int entityId)
+
+        public bool HasComponent(int entityId)//TODO: !!!multithread SIMD check with jobs(burst compiled SIMD)
         {
             for (int i = 0; i < EntityCount; i++)
             {

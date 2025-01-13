@@ -1,11 +1,9 @@
-using UnityEngine;
 using Game.ECS.Base;
 using Game.ECS.Base.Systems;
+using Game.ECS.Systems;
 using Game.Factory;
 using Game.Pool;
-using Game.ECS.Systems;
-using Game.ECS.Base.Components;
-using Unity.Mathematics;
+using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
@@ -31,10 +29,10 @@ public class GameController : MonoBehaviour
 
     private void InitializeGame()
     {
-        MapSettings.Initialize(256, 256, 1,8);
+        MapSettings.Initialize(256, 256, 1, 8);
         var poolManager = new PoolManager();
         _factoryManager = new FactoryManager(poolManager);
-        _gameWorld = new ECSWorld(256,_factoryManager);
+        _gameWorld = new ECSWorld(256, _factoryManager);
         _systemManager = new SystemManager(_gameWorld);
     }
 
@@ -46,27 +44,26 @@ public class GameController : MonoBehaviour
 
     private void SetupSystems()
     {
-  
+
 
 
         var occupancySystem = new OccupancySystem(_gameWorld);
         var moverCreationSystem = new MoverCreationSystem(_gameWorld, _factoryManager);
-        var buildingCreationSystem = new BuildingCreationSystem(_gameWorld,_factoryManager);
-        var inputSystem = new InputSystem(_gameWorld,_camera);
+        var buildingCreationSystem = new BuildingCreationSystem(_gameWorld, _factoryManager);
+        var inputSystem = new InputSystem(_gameWorld, _camera);
         var selectionSystem = new SelectionSystem(_gameWorld);
         var aStarSystem = new AStarSystem(_gameWorld);
         var movementSystem = new MovementSystem(_gameWorld);
         var constructSystem = new ConstructSystem(_gameWorld);
-        var areaSystem=new AreaSystem(_gameWorld);
-        //var uIController = new UIController(_uiManager);
+        var areaSystem = new AreaSystem(_gameWorld);
 
-        ConfigureSystemEventHandlers(occupancySystem, 
-                                     moverCreationSystem, 
-                                     buildingCreationSystem, 
-                                     inputSystem, 
-                                     selectionSystem, 
-                                     aStarSystem, 
-                                     movementSystem, 
+        ConfigureSystemEventHandlers(occupancySystem,
+                                     moverCreationSystem,
+                                     buildingCreationSystem,
+                                     inputSystem,
+                                     selectionSystem,
+                                     aStarSystem,
+                                     movementSystem,
                                      constructSystem,
                                      areaSystem
                                      );//uIController
@@ -82,7 +79,7 @@ public class GameController : MonoBehaviour
         _systemManager.InitSystems();
     }
 
-    private void ConfigureSystemEventHandlers(
+    private void ConfigureSystemEventHandlers(//TODO:Unsubscription
         OccupancySystem occupancySystem,
         MoverCreationSystem moverCreationSystem,
         BuildingCreationSystem buildingCreationSystem,

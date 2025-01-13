@@ -6,7 +6,7 @@ using Unity.Collections;
 
 namespace Game.ECS.Base.Components
 {
-    public struct CoordinateComponent
+    public struct CoordinateComponent//TODO: create custom Coordinate type to encapsulate position data and implement operator overloads
     {
         public int2 Coordinate;
     }

@@ -1,22 +1,20 @@
 using Game.ECS.Base;
 using Game.ECS.Base.Components;
-using Game.ECS.Systems;
 using System;
 using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
 internal static class QuerySystem
 {
-
+    //TODO: GetEntityId with coordinate
     internal static int GetEntityId(ComponentContainer<QuadTreeLeafComponent> componentContainer,
                                    in QuadTreeData quadTreeData,
                                    Vector2 point)
     {
         if (!quadTreeData.TileQuadtreeRoot.Rect.Contains(point))
         {
-            Debug.LogError("OUT OF MAP "+ point);
+            Debug.LogError("OUT OF MAP " + point);
             return -1;
         }
 
@@ -45,11 +43,11 @@ internal static class QuerySystem
 
         for (int i = 0; i < currentNode.Capacity; i++)
         {
-            QuadTreeLeafComponent quadTreeLeafComponent= componentContainer.GetComponent(quadTreeData.QuadtreeLeafIndexes[currentNode.LeavesStart + i]);
-           
+            QuadTreeLeafComponent quadTreeLeafComponent = componentContainer.GetComponent(quadTreeData.QuadtreeLeafIndexes[currentNode.LeavesStart + i]);
+
             if (quadTreeLeafComponent.Rect.Contains(point))
             {
-               
+
                 return quadTreeData.QuadtreeLeafIndexes[currentNode.LeavesStart + i];
             }
         }
@@ -60,25 +58,25 @@ internal static class QuerySystem
 
     public static int GetClosestUnoccupiedNeighbour(int2 coordinate, ECSWorld world)
     {
-            List<int2> neighbors = new List<int2>();
+        List<int2> neighbors = new List<int2>();
 
-            foreach (var direction in MapSettings.Directions)
+        foreach (var direction in MapSettings.Directions)
+        {
+            Vector2 checkCoordinate = new Vector2(coordinate.x + direction.x, coordinate.y + direction.y);
+
+            if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
             {
-                Vector2 checkCoordinate = new Vector2(coordinate.x + direction.x, coordinate.y + direction.y);
-              
-                    if (checkCoordinate.x >= 0 && checkCoordinate.x < MapSettings.MapWidth && checkCoordinate.y >= 0 && checkCoordinate.y < MapSettings.MapHeight)
-                    {
-                        int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
-                                                             world.QuadTreeData,
-                                                             checkCoordinate);
+                int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
+                                                     world.QuadTreeData,
+                                                     checkCoordinate);
 
-                        var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
-                        var tileComp = world.GetComponent<TileComponent>(tileId);
-                       
-                        if(tileComp.OccupantEntityID==-1)
-                        {
-                            neighbors.Add(coordinateComp.Coordinate);
-                        }
+                var coordinateComp = world.GetComponent<CoordinateComponent>(tileId);
+                var tileComp = world.GetComponent<TileComponent>(tileId);
+
+                if (tileComp.OccupantEntityID == -1)
+                {
+                    neighbors.Add(coordinateComp.Coordinate);
+                }
             }
         }
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
@@ -88,18 +86,18 @@ internal static class QuerySystem
 
     }
 
-    public static int GetClosestUnoccupiedNeighbourOfArea(ECSWorld world,int2 coordinate, int width, int height)
+    public static int GetClosestUnoccupiedNeighbourOfArea(ECSWorld world, int2 coordinate, int width, int height)
     {
 
         List<int2> neighbors = new List<int2>();
-   
+
         Vector2 checkCoordinate = new Vector2(coordinate.x, coordinate.y);
 
         int tileId = GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                                  world.QuadTreeData,
                                                                  checkCoordinate);
 
-        int buildingEntityId= world.GetComponent<TileComponent>(tileId).OccupantEntityID;
+        int buildingEntityId = world.GetComponent<TileComponent>(tileId).OccupantEntityID;
 
         int2 buildingRoot = world.GetComponent<CoordinateComponent>(buildingEntityId).Coordinate;
 
@@ -107,7 +105,7 @@ internal static class QuerySystem
         {
             checkCoordinate = new Vector2(coordinate.x + x, coordinate.y - 1);
             int2 coordinateOfNeigh = CheckTileAndGetCoordinate(world, checkCoordinate);
-            if (coordinateOfNeigh.x!=-1) neighbors.Add(coordinateOfNeigh);
+            if (coordinateOfNeigh.x != -1) neighbors.Add(coordinateOfNeigh);
         }
         for (int x = -1; x < width + 1; x++)
         {
@@ -130,7 +128,7 @@ internal static class QuerySystem
 
         if (neighbors == null || neighbors.Count == 0) Debug.LogError("No Empty Neighbour of Building");
         int2 cn = FindClosestCoordinate(coordinate, neighbors);
-       
+
         return GetEntityId(world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                              world.QuadTreeData,
                                                              new float2(cn.x, cn.y));
@@ -156,7 +154,7 @@ internal static class QuerySystem
                 minDistanceSquared = distanceSquared;
             }
         }
-        
+
         return closest;
     }
 

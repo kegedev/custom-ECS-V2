@@ -159,7 +159,7 @@ namespace Game.ECS.Systems
         }
                 
 
-        private List<AStarNode> GetNeighbors(AStarNode currentNode)
+        private List<AStarNode> GetNeighbors(AStarNode currentNode)//TODO: use jobs
         {
             List<AStarNode> neighbors = new List<AStarNode>();
 
@@ -167,25 +167,20 @@ namespace Game.ECS.Systems
             {
                 Vector2 checkCoordinate = new Vector2(currentNode.Coordinate.x + direction.x, currentNode.Coordinate.y + direction.y);
 
-                // Harita sınırlarını kontrol et
                 if (checkCoordinate.x < 0 || checkCoordinate.x >= MapSettings.MapWidth || checkCoordinate.y < 0 || checkCoordinate.y >= MapSettings.MapHeight)
                     continue;
 
-                // Tile ID'sini al
                 int tileId = QuerySystem.GetEntityId(_world.GetComponentContainer<QuadTreeLeafComponent>(),
                                                      _world.QuadTreeData,
                                                      checkCoordinate);
 
-                // Geçersiz veya bulunamayan tile'ları atla
                 if (tileId == -1) continue;
 
                 var coordinateComp = _world.GetComponent<CoordinateComponent>(tileId);
                 var tileComp = _world.GetComponent<TileComponent>(tileId);
 
-                // Eğer tile geçilemezse (engelse) atla
                 if (tileComp.OccupantEntityID!=-1) continue;
 
-                // Komşuyu ekle
                 neighbors.Add(new AStarNode()
                 {
                     MoverIndex = tileComp.OccupantEntityID,

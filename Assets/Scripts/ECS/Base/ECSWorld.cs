@@ -10,7 +10,7 @@ namespace Game.ECS.Base
 {
     public class ECSWorld
     {
-        public int EntityIdCounter;
+        public int EntityIdCounter;//TODO: EntityID Pooling
         public int EntityCount;
         public NativeArray<int> Entities;
         public Dictionary<Type, object> ComponentContainers; 
